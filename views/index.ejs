@@ -3,23 +3,10 @@
 <head>
     <meta charset="utf-8" />
     <title>Tactical</title>
-    <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
-    <a href="/games">Battles list</a>
+    <a href="/battles">Battles list</a>
 </body>
-
-<script type="application/javascript">
-    window.onload = function() {
-        var socket = io.connect('http://localhost:3001');
-
-        socket.emit("ask.games");
-
-        socket.on("receive.games", (data) => {
-
-        });
-    }
-</script>
 
 </html>

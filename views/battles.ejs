@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>Tactical</title>
+</head>
+
+<body>
+    <% battles.forEach(battle => { %>
+        <a href="<%= "/battle?id=" + battle.id %>"><%= battle.id %></a> (<%= battle.state %>)
+    <% }) %>
+</body>
+
+</html>

@@ -25,12 +25,15 @@ app.get('/', function (req, res) {
 	res.render("index.ejs");
 });
 
-app.get('/games', function (req, res) {
-	// Load list of games
-	const url: string = API_HOST + "/api/games/";
+app.get('/battles', function (req, res) {
+	const url: string = API_HOST + "/games/";
 	axios.get(url)
-		.then((resp) => res.render("games.ejs", {games: resp.data}))
-		.catch((error) => res.render("error.ejs", {error: error}));
+		.then((resp) => res.render("battles.ejs", { battles: resp.data }))
+		.catch((error) => res.render("error.ejs", { error: error }));
+});
+
+app.get('/battle', function (req, res) {
+	res.render("battle.ejs");
 });
 
 server.listen(EXPRESS_PORT_NUMBER, function () {
@@ -45,5 +48,27 @@ io.on('connect', (socket) => {
 
 	socket.on('disconnect', (reason: string) => {
 		console.log(socket.id + " : User disconnected");
+	});
+
+	socket.on('battle', (id: string) => {
+		const url: string = API_HOST + "/games/" + id;
+		axios.get(url)
+			.then((resp) => socket.emit("battle", resp.data))
+			.catch((error) => {
+				if (error.response.data.error) {
+					socket.emit("battle-error", error.response.data.error);
+				}
+			});
+	});
+
+	socket.on('battlefield', (id: string) => {
+		const url: string = API_HOST + "/fields/" + id;
+		axios.get(url)
+			.then((resp) => socket.emit("battlefield", resp.data))
+			.catch((error) => {
+				if (error.response.data.error) {
+					socket.emit("battle-error", error.response.data.error);
+				}
+			});
 	});
 });

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Tactical</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/public/js/lib/pixi.min.js"></script>
+</head>
+
+<body>
+</body>
+
+<script type="application/javascript">
+    const TEXTURES_REPOSITORY = "public/img/tiles/";
+    const BLOCK_SIZE = 64;
+    const WIDTH = 600;
+    const HEIGHT = 600;
+    const ResourceLoader = PIXI.Loader.shared;
+
+    let app = null;
+    let socket = null;
+    let battlefield = null;
+    let resourcesMap = {};
+
+    window.onload = function () {
+        initSocket();
+        initPIXI();
+    }
+
+    function initSocket() {
+        socket = io('http://localhost:3001');
+        
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        socket.emit("battle", urlParams.get('id'));
+
+        socket.on("battle", (data) => {
+            console.log(data);
+            if (data.fieldId && !battlefield) {
+                socket.emit("battlefield", data.fieldId);
+            }
+        });
+
+        socket.on("battlefield", (data) => {
+            console.log(data);
+            battlefield = data;
+            data.tileTypes.forEach(
+                t => resourcesMap[t.type] = TEXTURES_REPOSITORY + t.src);
+            ResourceLoader
+                .add(data.tileTypes.map(t => TEXTURES_REPOSITORY + t.src))
+                .load(() => loadBattlefield(BLOCK_SIZE, WIDTH, HEIGHT));
+        });
+
+        socket.on("battle-error", (error) => {
+            console.error(error);
+        });
+    }
+
+    function initPIXI() {
+        //Create a Pixi Application
+        app = new PIXI.Application({ width: WIDTH, height: HEIGHT });
+
+        //Add the canvas that Pixi automatically created for you to the HTML document
+        document.body.appendChild(app.view);
+    }
+
+    function loadBattlefield(blockSize, width, height) {
+        const diff = {x: blockSize / 2, y: blockSize / 4, z: -blockSize / 2};
+        const p0 = {x: (width / 2) - blockSize / 2, y: (height / 2) - blockSize / 2};
+
+        for (let i = 0; i < battlefield.tiles.length; i++) {
+            for (let j = 0; j < battlefield.tiles[i].length; j++) {
+                for (let k = 0; k < battlefield.tiles[i][j].length; k++) {
+                    const {x, y} = getRealPosition(i, j, k, p0, diff);
+
+                    const resourceName = resourcesMap[battlefield.tiles[i][j][k].type];
+                    const block = new PIXI.Sprite(ResourceLoader.resources[resourceName].texture);
+                    block.pivot.set(blockSize / 2, blockSize / 2);
+                    block.x = x;
+                    block.y = y;
+                    app.stage.addChild(block);
+                }
+            }
+        }
+    }
+
+    function getRealPosition(i, j, k, p0, diff) {
+        return {
+            x: p0.x + (j - i + 1) * diff.x,
+            y: p0.y + (j + i) * diff.y + k * diff.z
+        };
+    }
+</script>
+
+</html>
