@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <title>Tactical</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <% games.forEach(game => { %>
+        <a href="<%= "/games/" + game.id %>"><%= game.id %></a>
+    <% }) %>
+</body>
+
+</html>
