@@ -1,0 +1,12 @@
+{
+    "env": "dev",
+    "app": {
+        "port": 3001
+    },
+    "api": {
+        "host": "http://localhost:3000"
+    },
+    "process": {
+        "title": "tactical-front"
+    }
+}
