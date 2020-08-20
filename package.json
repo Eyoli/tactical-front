@@ -25,7 +25,8 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "set NODE_ENV=dev&& ts-node-dev ./src/app.ts"
+    "dev": "set NODE_ENV=dev&& ts-node-dev ./src/app.ts",
+    "dry-publish": "npm publish --dry-run"
   },
   "repository": {
     "type": "git",
