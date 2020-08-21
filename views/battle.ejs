@@ -6,51 +6,19 @@
     <title>Tactical</title>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/public/js/lib/pixi.min.js"></script>
+    <script src="/public/js/sprites.js"></script>
     <script src="/public/js/drawer.js"></script>
+    <script src="/public/js/socket-manager.js"></script>
 </head>
 
 <body>
 </body>
 
 <script type="application/javascript">
-    let socket = null;
-    let battlefield = null;
-    let unitStates = null;
-
     window.onload = function () {
-        initSocket();
-
         //Add the canvas that Pixi automatically created for you to the HTML document
-        document.body.appendChild(Drawer.app.view);
-    }
-
-    function initSocket() {
-        socket = io('http://localhost:3001');
-        
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-
-        socket.emit("battle", urlParams.get('id'));
-
-        socket.on("battle", (data) => {
-            console.log(data);
-            unitStates = data.unitStates;
-            if (data.fieldId && !battlefield) {
-                socket.emit("battlefield", data.fieldId);
-            }
-        });
-
-        socket.on("battlefield", (data) => {
-            console.log(data);
-            battlefield = data;
-            Drawer.init(data.tileTypes, () => {
-                Drawer.draw(battlefield, unitStates);
-            });
-        });
-
-        socket.on("battle-error", (error) => {
-            console.error(error);
-        });
+        Drawer.init(document.body);
+        SocketManager.init();
     }
 </script>
 

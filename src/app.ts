@@ -71,4 +71,15 @@ io.on('connect', (socket) => {
 				}
 			});
 	});
+
+	socket.on('positions', ({battleId, unitId}: {battleId: string, unitId: string}) => {
+		const url: string = API_HOST + "/games/" + battleId + "/units/" + unitId + "/positions";
+		axios.get(url)
+			.then((resp) => socket.emit("positions", resp.data))
+			.catch((error) => {
+				if (error.response.data.error) {
+					socket.emit("battle-error", error.response.data.error);
+				}
+			});
+	});
 });
