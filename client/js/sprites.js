@@ -5,12 +5,14 @@ function prepareNextAnimation(unitSprite) {
 
 class UnitSprite extends PIXI.AnimatedSprite {
 
-    constructor(textures) {
+    constructor(textures, size) {
         super(textures);
 
         this.width = this.texture.width;
         this.height = this.texture.height;
         this.pivot.set(this.width / 2, this.height);
+        const scale = size / this.width;
+        this.scale.set(scale, scale);
 
         // animation
         this.animationSpeed = 0.1;
@@ -39,9 +41,41 @@ class TileSprite extends PIXI.Sprite {
     constructor(texture, size) {
         super(texture);
 
-        this.pivot.set(size / 2, size / 2);
         this.width = size;
         this.height = size;
+        this.pivot.set(this.width / 2, this.height);
+        this.size = size;
+    }
+}
+
+class PositionTileSprite extends TileSprite {
+
+    constructor(texture, size) {
+        super(texture, size);
+
+        // interactivity
+        this.interactive = true;
+        this.buttonMode = true;
+    }
+
+    getMask() {
+        if (!this.mask) {
+            const mask = new PIXI.Graphics();
+            mask.lineStyle(0);
+            mask.beginFill(0x3500FA, 1);
+            mask.drawPolygon([
+                this.x, this.y + this.size / 4,
+                this.x + this.size / 2, this.y,
+                this.x + this.size, this.y + this.size / 4,
+                this.x + this.size / 2, this.y + this.size / 2,
+            ]);
+            mask.endFill();
+            mask.pivot.set(this.width / 2, this.height);
+            mask.zIndex = this.zIndex;
+            this.mask = mask;
+        }
+
+        return this.mask;
     }
 }
 

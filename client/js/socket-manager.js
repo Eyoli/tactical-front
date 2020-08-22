@@ -1,6 +1,7 @@
 const SocketManager = (() => {
     let battlefield = null;
     let unitStates = null;
+    let selectedUnitId = null;
 
     return {
         init: function () {
@@ -35,13 +36,34 @@ const SocketManager = (() => {
 
             socket.on("positions", (positions) => {
                 console.log(positions);
+                Drawer.drawPositions(positions, onClickOnPosition);
+            });
+
+            socket.on("move", (unitState) => {
+                console.log(unitState);
+                Drawer.clearPositionTiles();
+                Drawer.updateUnit(unitState);
+                socket.emit("endTurn", battleId);
+            });
+
+            socket.on("endTurn", (battle) => {
+                console.log("END TURN", battle);
             });
 
             function onClickOnUnit(unitState) {
                 console.log(unitState);
+                selectedUnitId = unitState.unit.id;
                 socket.emit("positions", {
                     battleId: battleId,
-                    unitId: unitState.unit.id
+                    unitId: selectedUnitId
+                });
+            }
+
+            function onClickOnPosition(position) {
+                socket.emit("move", {
+                    battleId: battleId,
+                    unitId: selectedUnitId,
+                    position: position
                 });
             }
         }
