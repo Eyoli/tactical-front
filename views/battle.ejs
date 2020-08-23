@@ -23,9 +23,9 @@
         //Add the canvas that Pixi automatically created for you to the HTML document
         document.body.appendChild(app.view);
 
-        Drawer.init(app);
         const ui = new TacticalUI(app);
-        SocketManager.init(ui);
+        const drawer = new Drawer(app);
+        SocketManager.init(drawer, ui);
     }
 </script>
 

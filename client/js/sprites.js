@@ -48,33 +48,26 @@ class TileSprite extends PIXI.Sprite {
     }
 }
 
-class PositionTileSprite extends TileSprite {
+class PositionSprite extends PIXI.Graphics {
 
-    constructor(texture, size) {
-        super(texture, size);
+    constructor(tileSprite) {
+        super();
+
+        this.lineStyle(0);
+        this.beginFill(0x3500FA, 0.5);
+        this.drawPolygon([
+            0, tileSprite.height / 4,
+            tileSprite.width / 2, 0,
+            tileSprite.width, tileSprite.height / 4,
+            tileSprite.width / 2, tileSprite.height / 2,
+        ]);
+        this.endFill();
+        this.pivot.set(this.width / 2, 2 * this.height);
+        this.zIndex = this.zIndex;
 
         // interactivity
         this.interactive = true;
         this.buttonMode = true;
-        this.blendMode = PIXI.BLEND_MODES.MULTIPLY;
-    }
-
-    getMask() {
-        const mask = new PIXI.Graphics();
-        mask.lineStyle(0);
-        mask.beginFill(0x3500FA, 1);
-        mask.drawPolygon([
-            this.x, this.y + this.size / 4,
-            this.x + this.size / 2, this.y,
-            this.x + this.size, this.y + this.size / 4,
-            this.x + this.size / 2, this.y + this.size / 2,
-        ]);
-        mask.endFill();
-        mask.pivot.set(this.width / 2, this.height);
-        mask.zIndex = this.zIndex;
-        this.mask = mask;
-
-        return this.mask;
     }
 }
 
@@ -128,8 +121,8 @@ class WaterEffect {
     applyOn(sprite) {
         const displacementFilter = new PIXI.filters.DisplacementFilter(this.displacementSprite);
         sprite.filters = [displacementFilter];
-        displacementFilter.scale.x = 5;
-        displacementFilter.scale.y = 5;
+        displacementFilter.scale.x = 7;
+        displacementFilter.scale.y = 7;
     }
 
     static createRipples(width, height, channel, freq) {

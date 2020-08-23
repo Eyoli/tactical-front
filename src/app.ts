@@ -84,6 +84,12 @@ io.on('connect', (socket) => {
 			.catch((error) => catchError(error));
 	});
 
+	socket.on('rollbackAction', (id: string) => {
+		requestHandlerPort.rollbackAction(id)
+			.then((resp) => socket.emit("rollbackAction", resp.data))
+			.catch((error) => catchError(error));
+	});
+
 	function catchError(error: any) {
 		if (error.response.data.error) {
 			socket.emit("battle-error", error.response.data.error);
