@@ -6,13 +6,11 @@ class BattlefieldContainer extends PIXI.Container {
         this.positionsSprites = [];
     }
 
-    addTile(tileSprite, i, j, k) {
-        this.updatePosition(tileSprite, i, j, k);
+    addTile(tileSprite) {
         this.addChild(tileSprite);
     }
 
-    addUnit(unitSprite, i, j, k) {
-        this.updatePosition(unitSprite, i, j, k);
+    addUnit(unitSprite) {
         this.addChild(unitSprite);
     }
 
@@ -28,7 +26,8 @@ class BattlefieldContainer extends PIXI.Container {
     }
 
     addPositionTile(positionTile, i, j, k) {
-        this.addTile(positionTile, i, j, k);
+        this.addTile(positionTile);
+        this.updatePosition(positionTile, i, j, k);
         const mask = positionTile.getMask();
         this.addChild(mask);
         this.positionsSprites.push(positionTile);

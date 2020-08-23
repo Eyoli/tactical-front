@@ -2,10 +2,7 @@ const Drawer = (function () {
     const TILES_TEXTURES_REPOSITORY = "public/img/tiles/";
     const UNITS_TEXTURES_REPOSITORY = "public/img/units/";
     const BLOCK_SIZE = 64;
-    const WIDTH = 1000;
-    const HEIGHT = 600;
     const SPATIAL_STEP = { x: BLOCK_SIZE / 2, y: BLOCK_SIZE / 4, z: -BLOCK_SIZE / 2 };
-    const P0 = { x: (WIDTH / 2), y: (HEIGHT / 2) };
 
     const resourcesMap = {};
 
@@ -17,37 +14,51 @@ const Drawer = (function () {
     ResourceLoader.add("position", TILES_TEXTURES_REPOSITORY + "blocks_31.png");
 
     const battlefieldContainer = new BattlefieldContainer(new PositionResolver(SPATIAL_STEP));
-    battlefieldContainer.position.set(P0.x, P0.y);
+    let waterEffectService;
+    let tiles;
+    let tilesSprites;
 
     const unitsHolder = new Map();
 
     return {
-        init: (parentDOM) => {
-            app = new PIXI.Application({ width: WIDTH, height: HEIGHT });
-            app.stage.addChild(battlefieldContainer);
+        init: (application) => {
+            app = application;
 
-            parentDOM.appendChild(app.view);
+            waterEffectService = new WaterEffect(app);
+
+            const P0 = { x: (app.renderer.screen.width / 2), y: (app.renderer.screen.height / 2) };
+            battlefieldContainer.position.set(P0.x, P0.y);
+            app.stage.addChild(battlefieldContainer);
         },
 
         load: (tileTypes, callback) => {
-            tileTypes.forEach(t => {
-                ResourceLoader.add(TILES_TEXTURES_REPOSITORY + t.src);
-                resourcesMap[t.type] = TILES_TEXTURES_REPOSITORY + t.src;
+            tileTypes.forEach(tileType => {
+                tileType.src = TILES_TEXTURES_REPOSITORY + tileType.src;
+                ResourceLoader.add(tileType.src);
+                resourcesMap[tileType.type] = tileType;
             });
-
             ResourceLoader.load(callback);
         },
 
         drawBattlefield: (battlefield) => {
-            for (let i = 0; i < battlefield.tiles.length; i++) {
-                for (let j = 0; j < battlefield.tiles[i].length; j++) {
-                    for (let k = 0; k < battlefield.tiles[i][j].length; k++) {
-                        const resourceName = resourcesMap[battlefield.tiles[i][j][k]];
-                        const tile = new TileSprite(ResourceLoader.resources[resourceName].texture, BLOCK_SIZE);
-                        battlefieldContainer.addTile(tile, i, j, k);
-                    }
-                }
-            }
+            tiles = battlefield.tiles;
+            tilesSprites = tiles.map(
+                (row, i) => row.map(
+                    (pile, j) => pile.map(
+                        (tile, k) => {
+                            const tileType = resourcesMap[tiles[i][j][k]];
+                            const tileSprite = new TileSprite(ResourceLoader.resources[tileType.src].texture, BLOCK_SIZE);
+                            battlefieldContainer.addTile(tileSprite);
+                            battlefieldContainer.updatePosition(tileSprite, i, j, k);
+
+                            if (tileType.liquid) {
+                                waterEffectService.applyOn(tileSprite);
+                            }
+                            return tileSprite;
+                        }
+                    )
+                )
+            );
         },
 
         drawUnits: (unitStates, onClickOnUnit) => {
@@ -62,7 +73,8 @@ const Drawer = (function () {
                 const { position: { x, y, z } } = unitState;
                 const unitSprite = new UnitSprite(fluffyTextures, BLOCK_SIZE);
                 unitSprite.onClick(() => onClickOnUnit(unitState));
-                battlefieldContainer.addUnit(unitSprite, x, y, z + 1);
+                battlefieldContainer.addUnit(unitSprite);
+                battlefieldContainer.updatePosition(unitSprite, x, y, z + 1);
                 unitsHolder.set(unitState.unit.id, unitSprite);
             });
             battlefieldContainer.sortByZIndex();
@@ -82,11 +94,11 @@ const Drawer = (function () {
             battlefieldContainer.clearPositionTiles();
         },
 
-        updateUnit(unitState) {
+        updateUnit(unitState, onClickOnUnit) {
             const unitSprite = unitsHolder.get(unitState.unit.id);
             unitSprite.onClick(() => onClickOnUnit(unitState));
             battlefieldContainer.updatePosition(
-                unitSprite, 
+                unitSprite,
                 unitState.position.x,
                 unitState.position.y,
                 unitState.position.z + 1

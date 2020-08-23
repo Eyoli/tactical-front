@@ -9,6 +9,7 @@
     <script src="/public/js/sprites.js"></script>
     <script src="/public/js/container.js"></script>
     <script src="/public/js/drawer.js"></script>
+    <script src="/public/js/tactical-ui.js"></script>
     <script src="/public/js/socket-manager.js"></script>
 </head>
 
@@ -17,9 +18,14 @@
 
 <script type="application/javascript">
     window.onload = function () {
+        const app = new PIXI.Application({ width: 1000, height: 600 });
+
         //Add the canvas that Pixi automatically created for you to the HTML document
-        Drawer.init(document.body);
-        SocketManager.init();
+        document.body.appendChild(app.view);
+
+        Drawer.init(app);
+        const ui = new TacticalUI(app);
+        SocketManager.init(ui);
     }
 </script>
 

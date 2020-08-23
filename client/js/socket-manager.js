@@ -2,9 +2,12 @@ const SocketManager = (() => {
     let battlefield = null;
     let unitStates = null;
     let selectedUnitId = null;
+    let ui = null;
 
     return {
-        init: function () {
+        init: function (tacticalUI) {
+            ui = tacticalUI;
+
             const socket = io('http://localhost:3001');
 
             const queryString = window.location.search;
@@ -27,6 +30,8 @@ const SocketManager = (() => {
                 Drawer.load(data.tileTypes, () => {
                     Drawer.drawBattlefield(battlefield);
                     Drawer.drawUnits(unitStates, onClickOnUnit);
+                    ui.drawNextTurnButton(onClickOnNextTurnButton);
+                    ui.drawResetTurnButton(onClickOnResetTurnButton);
                 });
             });
 
@@ -42,11 +47,11 @@ const SocketManager = (() => {
             socket.on("move", (unitState) => {
                 console.log(unitState);
                 Drawer.clearPositionTiles();
-                Drawer.updateUnit(unitState);
-                socket.emit("endTurn", battleId);
+                Drawer.updateUnit(unitState, onClickOnUnit);
             });
 
             socket.on("endTurn", (battle) => {
+                Drawer.clearPositionTiles();
                 console.log("END TURN", battle);
             });
 
@@ -65,6 +70,14 @@ const SocketManager = (() => {
                     unitId: selectedUnitId,
                     position: position
                 });
+            }
+
+            function onClickOnNextTurnButton() {
+                socket.emit("endTurn", battleId);
+            }
+
+            function onClickOnResetTurnButton() {
+                socket.emit("resetTurn", battleId);
             }
         }
     }
