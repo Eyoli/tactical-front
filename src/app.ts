@@ -14,9 +14,9 @@ const server = new http.Server(app);
 const EXPRESS_PORT_NUMBER = config.get("app.port");
 const API_HOST: string = config.get("api.host");
 
-app.set('views', __dirname + '/../views');
+app.set('views', __dirname + '/views');
 // static resources
-app.use('/public', express.static(__dirname + '/../client'));
+app.use('/public', express.static(__dirname + '/client'));
 // support json encoded bodies
 app.use(bodyParser.json());
 // support encoded bodies
