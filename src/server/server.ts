@@ -67,10 +67,13 @@ io.on('connect', (socket) => {
 			.catch((error) => catchError(error));
 	});
 
-	type PositionsRequest = { battleId: string, unitId: string };
-	socket.on('positions', ({ battleId, unitId }: PositionsRequest) => {
+	type PositionsRequest = { battleId: string, unitId: string, canMove: boolean };
+	socket.on('positions', ({ battleId, unitId, canMove }: PositionsRequest) => {
 		requestHandlerPort.getPositions(battleId, unitId)
-			.then((resp) => socket.emit("positions", resp.data))
+			.then((resp) => socket.emit("positions", {
+				canMove: canMove, 
+				positions: resp.data
+			}))
 			.catch((error) => catchError(error));
 	});
 

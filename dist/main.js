@@ -63,7 +63,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "97fcb37065ae7c74829d";
+/******/ 	var hotCurrentHash = "d8e32b7f5f9ffb2ba714";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -56725,7 +56725,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ts_logger__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ts/logger */ "./src/ts/logger.ts");
 /* harmony import */ var _ts_logger__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_ts_logger__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js");
-/* harmony import */ var _ts_tactical_ui__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ts/tactical-ui */ "./src/ts/tactical-ui.js");
+/* harmony import */ var _ts_tactical_ui__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ts/tactical-ui */ "./src/ts/tactical-ui.ts");
+/* harmony import */ var _ts_tactical_ui__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_ts_tactical_ui__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _ts_drawer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ts/drawer */ "./src/ts/drawer.ts");
 /* harmony import */ var _ts_drawer__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_ts_drawer__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _ts_socket_manager__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ts/socket-manager */ "./src/ts/socket-manager.ts");
@@ -56746,7 +56747,7 @@ window.onload = function () {
   }); //Add the canvas that Pixi automatically created for you to the HTML document
 
   document.body.appendChild(app.view);
-  const ui = new _ts_tactical_ui__WEBPACK_IMPORTED_MODULE_2__["default"](app);
+  const ui = new _ts_tactical_ui__WEBPACK_IMPORTED_MODULE_2___default.a(app);
   const drawer = new _ts_drawer__WEBPACK_IMPORTED_MODULE_3___default.a(app);
   _ts_socket_manager__WEBPACK_IMPORTED_MODULE_4___default.a.init(drawer, ui);
   _ts_logger__WEBPACK_IMPORTED_MODULE_0___default()('A very warm welcome to Expack!'); // Needed for Hot Module Replacement
@@ -56759,63 +56760,105 @@ window.onload = function () {
 
 /***/ }),
 
-/***/ "./src/ts/container.js":
+/***/ "./src/ts/container.ts":
 /*!*****************************!*\
-  !*** ./src/ts/container.js ***!
+  !*** ./src/ts/container.ts ***!
   \*****************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BattlefieldContainer; });
-/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js");
 
-class BattlefieldContainer extends pixi_js__WEBPACK_IMPORTED_MODULE_0__["Container"] {
-  constructor(positionResolver) {
-    super();
-    this.positionResolver = positionResolver;
-    this.positionsSprites = [];
-  }
-
-  addTile(tileSprite, i, j, k) {
-    this.addChild(tileSprite);
-    this.updatePosition(tileSprite, i, j, k);
-  }
-
-  addUnit(unitSprite) {
-    this.addChild(unitSprite);
-  }
-
-  updatePosition(sprite, i, j, k, liquid = false) {
-    if (liquid) {
-      k -= 1 / 2;
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
     }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __spread = (this && this.__spread) || function () {
+    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
+    return ar;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var PIXI = __importStar(__webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js"));
+var BattlefieldContainer = /** @class */ (function (_super) {
+    __extends(BattlefieldContainer, _super);
+    function BattlefieldContainer(positionResolver) {
+        var _this = _super.call(this) || this;
+        _this.positionResolver = positionResolver;
+        _this.positionsSprites = [];
+        return _this;
+    }
+    BattlefieldContainer.prototype.addTile = function (tileSprite, i, j, k) {
+        this.addChild(tileSprite);
+        this.updatePosition(tileSprite, i, j, k);
+    };
+    BattlefieldContainer.prototype.addUnit = function (unitSprite) {
+        this.addChild(unitSprite);
+    };
+    BattlefieldContainer.prototype.updatePosition = function (sprite, i, j, k) {
+        var _a = this.positionResolver.resolve(i, j, k), xReal = _a.x, yReal = _a.y;
+        sprite.position.set(xReal, yReal);
+        sprite.zIndex = i + j + k;
+    };
+    BattlefieldContainer.prototype.clearPositionTiles = function () {
+        this.removeChild.apply(this, __spread(this.positionsSprites));
+        this.positionsSprites = [];
+    };
+    BattlefieldContainer.prototype.addPositionTile = function (positionTile, i, j, k) {
+        this.addChild(positionTile);
+        this.updatePosition(positionTile, i, j, k);
+        this.positionsSprites.push(positionTile);
+    };
+    BattlefieldContainer.prototype.sortByZIndex = function () {
+        this.children.sort(function (itemA, itemB) { return itemA.zIndex - itemB.zIndex; });
+    };
+    return BattlefieldContainer;
+}(PIXI.Container));
+exports.default = BattlefieldContainer;
 
-    const {
-      x: xReal,
-      y: yReal
-    } = this.positionResolver.resolve(i, j, k);
-    sprite.position.set(xReal, yReal);
-    sprite.zIndex = i + j + k;
-  }
-
-  clearPositionTiles() {
-    this.removeChild(...this.positionsSprites);
-    this.positionsSprites = [];
-  }
-
-  addPositionTile(positionTile, i, j, k) {
-    this.addTile(positionTile);
-    this.updatePosition(positionTile, i, j, k);
-    this.positionsSprites.push(positionTile);
-  }
-
-  sortByZIndex() {
-    this.children.sort((itemA, itemB) => itemA.zIndex - itemB.zIndex);
-  }
-
-}
 
 /***/ }),
 
@@ -56852,21 +56895,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var PIXI = __importStar(__webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js"));
-var container_1 = __importDefault(__webpack_require__(/*! ./container */ "./src/ts/container.js"));
+var container_1 = __importDefault(__webpack_require__(/*! ./container */ "./src/ts/container.ts"));
 var path_1 = __importDefault(__webpack_require__(/*! path */ "./node_modules/path-browserify/index.js"));
-var sprites_1 = __webpack_require__(/*! ./sprites */ "./src/ts/sprites.ts");
+var unit_sprite_1 = __webpack_require__(/*! ./sprites/unit-sprite */ "./src/ts/sprites/unit-sprite.ts");
+var water_effect_service_1 = __importDefault(__webpack_require__(/*! ./service/water-effect-service */ "./src/ts/service/water-effect-service.ts"));
+var position_resolver_1 = __importDefault(__webpack_require__(/*! ./service/position-resolver */ "./src/ts/service/position-resolver.ts"));
+var tile_sprite_1 = __importDefault(__webpack_require__(/*! ./sprites/tile-sprite */ "./src/ts/sprites/tile-sprite.ts"));
+var position_sprite_1 = __importDefault(__webpack_require__(/*! ./sprites/position-sprite */ "./src/ts/sprites/position-sprite.ts"));
 var TILES_TEXTURES_REPOSITORY = "./assets/tiles";
 var UNITS_TEXTURES_REPOSITORY = "./assets/units";
 var BLOCK_SIZE = 64;
 var SPATIAL_STEP = { x: BLOCK_SIZE / 2, y: BLOCK_SIZE / 4, z: -BLOCK_SIZE / 2 };
 var ResourceLoader = PIXI.Loader.shared;
+var MOVE_TILE_COLOR = 0x3500FA;
+var ACT_TILE_COLOR = 0x3500FA;
 var Drawer = /** @class */ (function () {
     function Drawer(application) {
         this.app = application;
         this.resourcesMap = new Map();
         this.unitsHolder = new Map();
-        this.battlefieldContainer = new container_1.default(new sprites_1.PositionResolver(SPATIAL_STEP));
-        this.waterEffectService = new sprites_1.WaterEffect(this.app);
+        this.battlefieldContainer = new container_1.default(new position_resolver_1.default(SPATIAL_STEP));
+        this.waterEffectService = new water_effect_service_1.default(this.app);
         var P0 = { x: (this.app.renderer.screen.width / 2), y: (this.app.renderer.screen.height / 2) };
         this.battlefieldContainer.position.set(P0.x, P0.y);
         this.app.stage.addChild(this.battlefieldContainer);
@@ -56886,7 +56935,7 @@ var Drawer = /** @class */ (function () {
         this.tiles = battlefield.tiles;
         this.tilesSprites = this.tiles.map(function (row, i) { return row.map(function (pile, j) { return pile.map(function (tile, k) {
             var tileType = _this.resourcesMap.get(tile);
-            var tileSprite = new sprites_1.TileSprite(ResourceLoader.resources[tileType.src].texture, BLOCK_SIZE);
+            var tileSprite = new tile_sprite_1.default(ResourceLoader.resources[tileType.src].texture, BLOCK_SIZE);
             _this.battlefieldContainer.addTile(tileSprite, i, j, k);
             if (tileType.liquid) {
                 _this.waterEffectService.applyOn(tileSprite);
@@ -56896,29 +56945,30 @@ var Drawer = /** @class */ (function () {
     };
     Drawer.prototype.drawUnits = function (unitStates, onClickOnUnit) {
         var _this = this;
-        var fluffyTextures = [];
-        for (var i = 0; i < 8; i++) {
-            var fluffyTexture = PIXI.Texture.from("fluffy-red-" + i + ".png");
-            fluffyTextures.push(fluffyTexture);
-        }
-        fluffyTextures.push(PIXI.Texture.from("fluffy-red-0.png"));
         unitStates.forEach(function (unitState) {
             var _a = unitState.position, x = _a.x, y = _a.y, z = _a.z;
-            var unitSprite = new sprites_1.UnitSprite(fluffyTextures, BLOCK_SIZE);
-            unitSprite.onClick(function () { return onClickOnUnit(unitState); });
+            var unitSprite = new unit_sprite_1.Fluffy(BLOCK_SIZE);
             _this.battlefieldContainer.addUnit(unitSprite);
-            _this.updateUnitPosition(unitSprite, x, y, z);
             _this.unitsHolder.set(unitState.unit.id, unitSprite);
+            _this.updateUnit(unitState, onClickOnUnit);
         });
         this.battlefieldContainer.sortByZIndex();
     };
-    Drawer.prototype.drawPositions = function (positions, onClickOnPosition) {
+    Drawer.prototype.drawPositionsForMove = function (positions, onClickOnPosition) {
+        this.drawPositions(positions, MOVE_TILE_COLOR, onClickOnPosition);
+    };
+    Drawer.prototype.drawPositionsForAction = function (positions, onClickOnPosition) {
+        this.drawPositions(positions, ACT_TILE_COLOR, onClickOnPosition);
+    };
+    Drawer.prototype.drawPositions = function (positions, color, onClickOnPosition) {
         var _this = this;
         this.battlefieldContainer.clearPositionTiles();
         positions.forEach(function (p) {
-            var positionTile = new sprites_1.PositionSprite(_this.tilesSprites[p.x][p.y][p.z]);
-            positionTile.on('pointerdown', function () { return onClickOnPosition(p); });
+            var positionTile = new position_sprite_1.default(_this.tilesSprites[p.x][p.y][p.z], color, onClickOnPosition);
             _this.battlefieldContainer.addPositionTile(positionTile, p.x, p.y, p.z);
+            if (onClickOnPosition) {
+                positionTile.triggerOnClick(function () { return onClickOnPosition(p); });
+            }
         });
         this.battlefieldContainer.sortByZIndex();
     };
@@ -56927,19 +56977,18 @@ var Drawer = /** @class */ (function () {
     };
     Drawer.prototype.updateUnit = function (unitState, onClickOnUnit) {
         var unitSprite = this.unitsHolder.get(unitState.unit.id);
+        var p = unitState.position;
         unitSprite.onClick(function () { return onClickOnUnit(unitState); });
-        this.updateUnitPosition(unitSprite, unitState.position.x, unitState.position.y, unitState.position.z);
-        this.battlefieldContainer.sortByZIndex();
-    };
-    Drawer.prototype.updateUnitPosition = function (unitSprite, x, y, z) {
-        var tileType = this.resourcesMap.get(this.tiles[x][y][z]);
+        var tileType = this.resourcesMap.get(this.tiles[p.x][p.y][p.z]);
+        var z = p.z;
         if (tileType.liquid) {
             z += 2 / 3;
         }
         else {
             z += 1;
         }
-        this.battlefieldContainer.updatePosition(unitSprite, x, y, z);
+        this.battlefieldContainer.updatePosition(unitSprite, p.x, p.y, z);
+        this.battlefieldContainer.sortByZIndex();
     };
     return Drawer;
 }());
@@ -56990,6 +57039,137 @@ exports.default = logMessage;
 
 /***/ }),
 
+/***/ "./src/ts/service/position-resolver.ts":
+/*!*********************************************!*\
+  !*** ./src/ts/service/position-resolver.ts ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var PositionResolver = /** @class */ (function () {
+    function PositionResolver(spatialStep) {
+        this.spatialStep = spatialStep;
+    }
+    PositionResolver.prototype.resolve = function (i, j, k) {
+        return {
+            x: (j - i) * this.spatialStep.x,
+            y: (j + i) * this.spatialStep.y + k * this.spatialStep.z
+        };
+    };
+    return PositionResolver;
+}());
+exports.default = PositionResolver;
+
+
+/***/ }),
+
+/***/ "./src/ts/service/water-effect-service.ts":
+/*!************************************************!*\
+  !*** ./src/ts/service/water-effect-service.ts ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var PIXI = __importStar(__webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js"));
+var WaterEffectService = /** @class */ (function () {
+    function WaterEffectService(app) {
+        var dContainer = new PIXI.Container();
+        var dRenderTexture = PIXI.RenderTexture.create({
+            width: app.renderer.width,
+            height: app.renderer.height
+        });
+        var ripplesR = WaterEffectService.createRipples(app.renderer.width, app.renderer.height, 0, 6);
+        var ripplesG = WaterEffectService.createRipples(app.renderer.width, app.renderer.height, 1, 7);
+        this.displacementSprite = new PIXI.Sprite(dRenderTexture);
+        dContainer.addChild(ripplesR);
+        dContainer.addChild(ripplesG);
+        var blurFilter = new PIXI.filters.BlurFilter(15, 3, 1);
+        dContainer.filters = [blurFilter];
+        var xformR = new PIXI.Transform();
+        var xformG = new PIXI.Transform();
+        var phase = 0;
+        xformR.position.set(app.renderer.width * 0.5, app.renderer.height * 0.25);
+        xformG.position.set(app.renderer.width * 0.5, app.renderer.height * 0.75);
+        app.ticker.add(function () {
+            xformR.rotation += 0.01; //  0.2*Math.PI;
+            xformG.rotation -= 0.0025; //-0.1*Math.PI;  
+            ripplesR.tileTransform = xformR;
+            ripplesG.tileTransform = xformG;
+            // ripplesR.tilePosition.x+=1.5;
+            // ripplesG.tilePosition.y-=1.9;
+            app.renderer.render(dContainer, dRenderTexture);
+            phase += 0.005;
+        });
+    }
+    WaterEffectService.prototype.applyOn = function (sprite) {
+        var displacementFilter = new PIXI.filters.DisplacementFilter(this.displacementSprite);
+        sprite.filters = [displacementFilter];
+        displacementFilter.scale.x = 7;
+        displacementFilter.scale.y = 7;
+    };
+    WaterEffectService.createRipples = function (width, height, channel, freq) {
+        var cvo = new PIXI.utils.CanvasRenderTarget(500, 500);
+        var cv = cvo.canvas;
+        var ctx = cvo.context;
+        var grd = ctx.createLinearGradient(0, 0, 500, 0);
+        var grd2 = ctx.createLinearGradient(0, 0, 0, 500);
+        var col = channel ? 'red' : 'green';
+        grd.addColorStop(0, 'black');
+        grd.addColorStop(0.5, col);
+        grd.addColorStop(1, 'black');
+        grd2.addColorStop(0, 'black');
+        grd2.addColorStop(0.5, 'rgba(0,0,0,0)');
+        grd2.addColorStop(1, 'black');
+        ctx.fillStyle = grd;
+        ctx.save();
+        ctx.scale(1 / freq, 1);
+        for (var i = 0; i < freq; i++) {
+            ctx.fillRect(0, 0, 500, 500);
+            ctx.translate(500, 0);
+        }
+        ctx.restore();
+        ctx.scale(1, 1 / freq);
+        ctx.fillStyle = grd2;
+        for (var i = 0; i < freq; i++) {
+            ctx.fillRect(0, 0, 500, 500);
+            ctx.translate(0, 500);
+        }
+        var ripples = new PIXI.TilingSprite(PIXI.Texture.from(cv), width, height);
+        ripples.blendMode = PIXI.BLEND_MODES.ADD;
+        return ripples;
+    };
+    return WaterEffectService;
+}());
+exports.default = WaterEffectService;
+
+
+/***/ }),
+
 /***/ "./src/ts/socket-manager.ts":
 /*!**********************************!*\
   !*** ./src/ts/socket-manager.ts ***!
@@ -57015,11 +57195,12 @@ var SocketManager = /** @class */ (function () {
         logger_1.default(this.battleId);
         var socket = socket_io_client_1.default('http://localhost:3001');
         socket.emit("battle", this.battleId);
-        socket.on("battle", function (data) {
-            logger_1.default(data);
-            _this.unitStates = data.unitStates;
-            if (data.fieldId && !_this.battlefield) {
-                socket.emit("battlefield", data.fieldId);
+        socket.on("battle", function (battle) {
+            logger_1.default(battle);
+            _this.unitStates = battle.unitStates;
+            _this.currentUnitId = battle.currentUnitId;
+            if (battle.fieldId && !_this.battlefield) {
+                socket.emit("battlefield", battle.fieldId);
             }
         });
         socket.on("battlefield", function (data) {
@@ -57028,16 +57209,24 @@ var SocketManager = /** @class */ (function () {
             _this.drawer.load(data.tileTypes, function () {
                 _this.drawer.drawBattlefield(_this.battlefield);
                 _this.drawer.drawUnits(_this.unitStates, SocketManager.onClickOnUnit);
-                ui.drawNextTurnButton(SocketManager.onClickOnNextTurnButton);
-                ui.drawResetTurnButton(SocketManager.onClickOnResetTurnButton);
+                ui.withMenu(800)
+                    .withButton("Move", 30, SocketManager.onMove)
+                    .withButton("Attack", 80, SocketManager.onAttack)
+                    .withButton("End turn", 130, SocketManager.onNextTurn)
+                    .withButton("Reset turn", 180, SocketManager.onResetAction);
             });
         });
         socket.on("battle-error", function (error) {
             console.error(error);
         });
-        socket.on("positions", function (positions) {
-            logger_1.default(positions);
-            _this.drawer.drawPositions(positions, SocketManager.onClickOnPosition);
+        socket.on("positions", function (data) {
+            logger_1.default(data);
+            if (data.canMove) {
+                _this.drawer.drawPositionsForMove(data.positions, SocketManager.onClickOnPosition);
+            }
+            else {
+                _this.drawer.drawPositionsForMove(data.positions);
+            }
         });
         socket.on("move", function (unitState) {
             logger_1.default(unitState);
@@ -57045,6 +57234,7 @@ var SocketManager = /** @class */ (function () {
             _this.drawer.updateUnit(unitState, SocketManager.onClickOnUnit);
         });
         socket.on("endTurn", function (battle) {
+            _this.currentUnitId = battle.currentUnitId;
             _this.drawer.clearPositionTiles();
             logger_1.default("END TURN", battle);
         });
@@ -57063,23 +57253,30 @@ var SocketManager = /** @class */ (function () {
     };
     SocketManager.onClickOnUnit = function (unitState) {
         logger_1.default(unitState);
-        SocketManager.instance.selectedUnitId = unitState.unit.id;
         SocketManager.instance.socket.emit("positions", {
             battleId: SocketManager.instance.battleId,
-            unitId: SocketManager.instance.selectedUnitId
+            unitId: unitState.unit.id,
+            canMove: unitState.unit.id === SocketManager.instance.currentUnitId
+                && !unitState.moved
         });
     };
     SocketManager.onClickOnPosition = function (position) {
         SocketManager.instance.socket.emit("move", {
             battleId: SocketManager.instance.battleId,
-            unitId: SocketManager.instance.selectedUnitId,
+            unitId: SocketManager.instance.currentUnitId,
             position: position
         });
     };
-    SocketManager.onClickOnNextTurnButton = function () {
+    SocketManager.onMove = function () {
+        SocketManager.instance.socket.emit("positions", SocketManager.instance.battleId);
+    };
+    SocketManager.onAttack = function () {
+        SocketManager.instance.socket.emit("attack", SocketManager.instance.battleId);
+    };
+    SocketManager.onNextTurn = function () {
         SocketManager.instance.socket.emit("endTurn", SocketManager.instance.battleId);
     };
-    SocketManager.onClickOnResetTurnButton = function () {
+    SocketManager.onResetAction = function () {
         SocketManager.instance.socket.emit("rollbackAction", SocketManager.instance.battleId);
     };
     return SocketManager;
@@ -57089,10 +57286,10 @@ exports.default = SocketManager;
 
 /***/ }),
 
-/***/ "./src/ts/sprites.ts":
-/*!***************************!*\
-  !*** ./src/ts/sprites.ts ***!
-  \***************************/
+/***/ "./src/ts/sprites/position-sprite.ts":
+/*!*******************************************!*\
+  !*** ./src/ts/sprites/position-sprite.ts ***!
+  \*******************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -57131,7 +57328,139 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WaterEffect = exports.PositionResolver = exports.PositionSprite = exports.TileSprite = exports.UnitSprite = void 0;
+var PIXI = __importStar(__webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js"));
+var PositionSprite = /** @class */ (function (_super) {
+    __extends(PositionSprite, _super);
+    function PositionSprite(tileSprite, color, onClick) {
+        var _this = _super.call(this) || this;
+        _this.lineStyle(0);
+        _this.beginFill(color, 0.5);
+        _this.drawPolygon([
+            0, tileSprite.height / 4,
+            tileSprite.width / 2, 0,
+            tileSprite.width, tileSprite.height / 4,
+            tileSprite.width / 2, tileSprite.height / 2,
+        ]);
+        _this.endFill();
+        _this.pivot.set(_this.width / 2, 2 * _this.height);
+        _this.zIndex = _this.zIndex;
+        return _this;
+    }
+    PositionSprite.prototype.triggerOnClick = function (callback) {
+        this.interactive = true;
+        this.buttonMode = true;
+        this.on('pointerdown', callback);
+    };
+    return PositionSprite;
+}(PIXI.Graphics));
+exports.default = PositionSprite;
+
+
+/***/ }),
+
+/***/ "./src/ts/sprites/tile-sprite.ts":
+/*!***************************************!*\
+  !*** ./src/ts/sprites/tile-sprite.ts ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var PIXI = __importStar(__webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js"));
+var TileSprite = /** @class */ (function (_super) {
+    __extends(TileSprite, _super);
+    function TileSprite(texture, size) {
+        var _this = _super.call(this, texture) || this;
+        _this.width = size;
+        _this.height = size;
+        _this.pivot.set(_this.width / 2, _this.height);
+        _this.size = size;
+        return _this;
+    }
+    return TileSprite;
+}(PIXI.Sprite));
+exports.default = TileSprite;
+
+
+/***/ }),
+
+/***/ "./src/ts/sprites/unit-sprite.ts":
+/*!***************************************!*\
+  !*** ./src/ts/sprites/unit-sprite.ts ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Fluffy = exports.UnitSprite = void 0;
 var PIXI = __importStar(__webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js"));
 function prepareNextAnimation(unitSprite) {
     unitSprite.gotoAndPlay(0);
@@ -57167,186 +57496,127 @@ var UnitSprite = /** @class */ (function (_super) {
     return UnitSprite;
 }(PIXI.AnimatedSprite));
 exports.UnitSprite = UnitSprite;
-var TileSprite = /** @class */ (function (_super) {
-    __extends(TileSprite, _super);
-    function TileSprite(texture, size) {
-        var _this = _super.call(this, texture) || this;
-        _this.width = size;
-        _this.height = size;
-        _this.pivot.set(_this.width / 2, _this.height);
-        _this.size = size;
-        return _this;
+var Fluffy = /** @class */ (function (_super) {
+    __extends(Fluffy, _super);
+    function Fluffy(size) {
+        return _super.call(this, Fluffy.getTexture(), size) || this;
     }
-    return TileSprite;
-}(PIXI.Sprite));
-exports.TileSprite = TileSprite;
-var PositionSprite = /** @class */ (function (_super) {
-    __extends(PositionSprite, _super);
-    function PositionSprite(tileSprite) {
-        var _this = _super.call(this) || this;
-        _this.lineStyle(0);
-        _this.beginFill(0x3500FA, 0.5);
-        _this.drawPolygon([
-            0, tileSprite.height / 4,
-            tileSprite.width / 2, 0,
-            tileSprite.width, tileSprite.height / 4,
-            tileSprite.width / 2, tileSprite.height / 2,
-        ]);
-        _this.endFill();
-        _this.pivot.set(_this.width / 2, 2 * _this.height);
-        _this.zIndex = _this.zIndex;
-        // interactivity
-        _this.interactive = true;
-        _this.buttonMode = true;
-        return _this;
-    }
-    return PositionSprite;
-}(PIXI.Graphics));
-exports.PositionSprite = PositionSprite;
-var PositionResolver = /** @class */ (function () {
-    function PositionResolver(spatialStep) {
-        this.spatialStep = spatialStep;
-    }
-    PositionResolver.prototype.resolve = function (i, j, k) {
-        return {
-            x: (j - i) * this.spatialStep.x,
-            y: (j + i) * this.spatialStep.y + k * this.spatialStep.z
-        };
-    };
-    return PositionResolver;
-}());
-exports.PositionResolver = PositionResolver;
-var WaterEffect = /** @class */ (function () {
-    function WaterEffect(app) {
-        var dContainer = new PIXI.Container();
-        var dRenderTexture = PIXI.RenderTexture.create({
-            width: app.renderer.width,
-            height: app.renderer.height
-        });
-        var ripplesR = WaterEffect.createRipples(app.renderer.width, app.renderer.height, 0, 6);
-        var ripplesG = WaterEffect.createRipples(app.renderer.width, app.renderer.height, 1, 7);
-        this.displacementSprite = new PIXI.Sprite(dRenderTexture);
-        dContainer.addChild(ripplesR);
-        dContainer.addChild(ripplesG);
-        var blurFilter = new PIXI.filters.BlurFilter(15, 3, 1);
-        dContainer.filters = [blurFilter];
-        var xformR = new PIXI.Transform();
-        var xformG = new PIXI.Transform();
-        var phase = 0;
-        xformR.position.set(app.renderer.width * 0.5, app.renderer.height * 0.25);
-        xformG.position.set(app.renderer.width * 0.5, app.renderer.height * 0.75);
-        app.ticker.add(function () {
-            xformR.rotation += 0.01; //  0.2*Math.PI;
-            xformG.rotation -= 0.0025; //-0.1*Math.PI;  
-            ripplesR.tileTransform = xformR;
-            ripplesG.tileTransform = xformG;
-            // ripplesR.tilePosition.x+=1.5;
-            // ripplesG.tilePosition.y-=1.9;
-            app.renderer.render(dContainer, dRenderTexture);
-            phase += 0.005;
-        });
-    }
-    WaterEffect.prototype.applyOn = function (sprite) {
-        var displacementFilter = new PIXI.filters.DisplacementFilter(this.displacementSprite);
-        sprite.filters = [displacementFilter];
-        displacementFilter.scale.x = 7;
-        displacementFilter.scale.y = 7;
-    };
-    WaterEffect.createRipples = function (width, height, channel, freq) {
-        var cvo = new PIXI.utils.CanvasRenderTarget(500, 500);
-        var cv = cvo.canvas;
-        var ctx = cvo.context;
-        var grd = ctx.createLinearGradient(0, 0, 500, 0);
-        var grd2 = ctx.createLinearGradient(0, 0, 0, 500);
-        var col = channel ? 'red' : 'green';
-        grd.addColorStop(0, 'black');
-        grd.addColorStop(0.5, col);
-        grd.addColorStop(1, 'black');
-        grd2.addColorStop(0, 'black');
-        grd2.addColorStop(0.5, 'rgba(0,0,0,0)');
-        grd2.addColorStop(1, 'black');
-        ctx.fillStyle = grd;
-        ctx.save();
-        ctx.scale(1 / freq, 1);
-        for (var i = 0; i < freq; i++) {
-            ctx.fillRect(0, 0, 500, 500);
-            ctx.translate(500, 0);
+    Fluffy.getTexture = function () {
+        if (!this.fluffyTextures) {
+            this.fluffyTextures = [];
+            for (var i = 0; i < 8; i++) {
+                var fluffyTexture = PIXI.Texture.from("fluffy-red-" + i + ".png");
+                this.fluffyTextures.push(fluffyTexture);
+            }
+            this.fluffyTextures.push(PIXI.Texture.from("fluffy-red-0.png"));
         }
-        ctx.restore();
-        ctx.scale(1, 1 / freq);
-        ctx.fillStyle = grd2;
-        for (var i = 0; i < freq; i++) {
-            ctx.fillRect(0, 0, 500, 500);
-            ctx.translate(0, 500);
-        }
-        var ripples = new PIXI.TilingSprite(PIXI.Texture.from(cv), width, height);
-        ripples.blendMode = PIXI.BLEND_MODES.ADD;
-        return ripples;
+        return this.fluffyTextures;
     };
-    return WaterEffect;
-}());
-exports.WaterEffect = WaterEffect;
+    return Fluffy;
+}(UnitSprite));
+exports.Fluffy = Fluffy;
 
 
 /***/ }),
 
-/***/ "./src/ts/tactical-ui.js":
+/***/ "./src/ts/tactical-ui.ts":
 /*!*******************************!*\
-  !*** ./src/ts/tactical-ui.js ***!
+  !*** ./src/ts/tactical-ui.ts ***!
   \*******************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TacticalUI; });
-/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js");
 
-class TacticalUI {
-  constructor(application) {
-    this.app = application;
-    this.style = new pixi_js__WEBPACK_IMPORTED_MODULE_0__["TextStyle"]({
-      fontFamily: 'Arial',
-      fontSize: 36,
-      fontStyle: 'italic',
-      fontWeight: 'bold',
-      fill: ['#ffffff', '#00ff99'],
-      // gradient
-      stroke: '#4a1850',
-      strokeThickness: 5,
-      dropShadow: true,
-      dropShadowColor: '#000000',
-      dropShadowBlur: 4,
-      dropShadowAngle: Math.PI / 6,
-      dropShadowDistance: 6
-    });
-  }
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var PIXI = __importStar(__webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js"));
+var TacticalUI = /** @class */ (function () {
+    function TacticalUI(app) {
+        this.app = app;
+        this.style = new PIXI.TextStyle({
+            fontFamily: 'Arial',
+            fontSize: 36,
+            fontStyle: 'italic',
+            fontWeight: 'bold',
+            fill: ['#ffffff', '#00ff99'],
+            stroke: '#4a1850',
+            strokeThickness: 5,
+            dropShadow: true,
+            dropShadowColor: '#000000',
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6
+        });
+    }
+    TacticalUI.prototype.withMenu = function (x) {
+        var menu = new Menu(800, this.style);
+        menu.x = x;
+        this.app.stage.addChild(menu);
+        return menu;
+    };
+    return TacticalUI;
+}());
+exports.default = TacticalUI;
+var Menu = /** @class */ (function (_super) {
+    __extends(Menu, _super);
+    function Menu(x, style) {
+        var _this = _super.call(this) || this;
+        _this.style = style;
+        _this.x = x;
+        return _this;
+    }
+    Menu.prototype.withButton = function (text, y, callback) {
+        var button = new Button(text, this.style, callback);
+        button.y = y;
+        this.addChild(button);
+        return this;
+    };
+    return Menu;
+}(PIXI.Container));
+var Button = /** @class */ (function (_super) {
+    __extends(Button, _super);
+    function Button(text, style, callback) {
+        var _this = _super.call(this, text, style) || this;
+        _this.interactive = true;
+        _this.buttonMode = true;
+        _this.on('pointerdown', callback);
+        return _this;
+    }
+    return Button;
+}(PIXI.Text));
 
-  drawNextTurnButton(callback) {
-    const nextTurnButton = new Button('Next turn', this.style, callback);
-    nextTurnButton.x = 800;
-    nextTurnButton.y = 30;
-    this.app.stage.addChild(nextTurnButton);
-  }
-
-  drawResetTurnButton(callback) {
-    const resetTurnButton = new Button('Reset turn', this.style, callback);
-    resetTurnButton.x = 800;
-    resetTurnButton.y = 80;
-    this.app.stage.addChild(resetTurnButton);
-  }
-
-}
-
-class Button extends pixi_js__WEBPACK_IMPORTED_MODULE_0__["Text"] {
-  constructor(text, style, callback) {
-    super(text, style);
-    this.interactive = true;
-    this.buttonMode = true;
-    this.on('pointerdown', callback);
-  }
-
-}
 
 /***/ }),
 

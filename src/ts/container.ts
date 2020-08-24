@@ -1,26 +1,27 @@
 import * as PIXI from 'pixi.js';
+import PositionResolver from './service/position-resolver';
+import PositionSprite from './sprites/position-sprite';
 
 export default class BattlefieldContainer extends PIXI.Container {
+    private positionResolver: PositionResolver;
+    private positionsSprites: PositionSprite[];
 
-    constructor(positionResolver) {
+    constructor(positionResolver: PositionResolver) {
         super();
         this.positionResolver = positionResolver;
         this.positionsSprites = [];
     }
 
-    addTile(tileSprite, i, j, k) {
+    addTile(tileSprite: PIXI.Sprite, i: number, j: number, k: number) {
         this.addChild(tileSprite);
         this.updatePosition(tileSprite, i, j, k);
     }
 
-    addUnit(unitSprite) {
+    addUnit(unitSprite: PIXI.Sprite) {
         this.addChild(unitSprite);
     }
 
-    updatePosition(sprite, i, j, k, liquid = false) {
-        if (liquid) {
-            k -= 1/2;
-        }
+    updatePosition(sprite: PIXI.DisplayObject, i: number, j: number, k: number) {
         const { x: xReal, y: yReal } = this.positionResolver.resolve(i, j, k);
         sprite.position.set(xReal, yReal);
         sprite.zIndex = i + j + k;
@@ -31,8 +32,8 @@ export default class BattlefieldContainer extends PIXI.Container {
         this.positionsSprites = [];
     }
 
-    addPositionTile(positionTile, i, j, k) {
-        this.addTile(positionTile);
+    addPositionTile(positionTile: PositionSprite, i: number, j: number, k: number) {
+        this.addChild(positionTile);
         this.updatePosition(positionTile, i, j, k);
         this.positionsSprites.push(positionTile);
     }
