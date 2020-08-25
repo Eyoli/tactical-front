@@ -78,8 +78,8 @@ io.on('connect', (socket) => {
 	});
 
 	type MoveRequest = { battleId: string, unitId: string, position: Position };
-	socket.on('move', ({ battleId, unitId, position }: MoveRequest) => {
-		requestHandlerPort.move(battleId, unitId, position)
+	socket.on('move', (req: MoveRequest) => {
+		requestHandlerPort.move(req.battleId, req.unitId, req.position)
 			.then((resp) => socket.emit("move", resp.data))
 			.catch((error) => catchError(error));
 	});
@@ -96,9 +96,18 @@ io.on('connect', (socket) => {
 			.catch((error) => catchError(error));
 	});
 
+	type ActionInfoRequest = { battleId: string, unitId: string, actionTypeId: string };
+	socket.on('actionInfo', (req: ActionInfoRequest) => {
+		requestHandlerPort.actionInfo(req.battleId, req.unitId, req.actionTypeId)
+			.then((resp) => socket.emit("actionInfo", resp.data))
+			.catch((error) => catchError(error));
+	});
+
 	function catchError(error: any) {
 		if (error.response.data.error) {
 			socket.emit("battle-error", error.response.data.error);
+		} else {
+			socket.emit("battle-error", error);
 		}
 	}
 });

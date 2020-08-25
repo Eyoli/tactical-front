@@ -3,6 +3,8 @@ import TacticalUI from "./tactical-ui";
 import io from 'socket.io-client';
 import logMessage from "./logger";
 
+enum ClickMode {MOVE, ATTACK};
+
 export default class SocketManager {
     private unitStates: any;
     private battlefield: any;
@@ -10,18 +12,17 @@ export default class SocketManager {
     private battleId: any;
     private socket: SocketIOClient.Socket;
     private drawer: Drawer;
+    private mode: ClickMode = ClickMode.MOVE;
 
-    private static instance: SocketManager;
-
-    private constructor(drawer: Drawer, ui: TacticalUI) {
+    constructor(drawer: Drawer, ui: TacticalUI) {
         this.drawer = drawer;
+
+        const socket = io('http://localhost:3001');
 
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         this.battleId = urlParams.get('id');
-        logMessage(this.battleId);
 
-        const socket = io('http://localhost:3001');
         socket.emit("battle", this.battleId);
 
         socket.on("battle", (battle: any) => {
@@ -38,13 +39,7 @@ export default class SocketManager {
             this.battlefield = data;
             this.drawer.load(data.tileTypes, () => {
                 this.drawer.drawBattlefield(this.battlefield);
-                this.drawer.drawUnits(this.unitStates, SocketManager.onClickOnUnit);
-
-                ui.withMenu(800)
-                    .withButton("Move", 30, SocketManager.onMove)
-                    .withButton("Attack", 80, SocketManager.onAttack)
-                    .withButton("End turn", 130, SocketManager.onNextTurn)
-                    .withButton("Reset turn", 180, SocketManager.onResetAction);
+                this.drawer.drawUnits(this.unitStates, this.onClickOnUnit());
             });
         });
 
@@ -53,77 +48,81 @@ export default class SocketManager {
         });
 
         socket.on("positions", (data: any) => {
-            logMessage(data);
+            logMessage("POSITIONS", data);
             if (data.canMove) {
-                this.drawer.drawPositionsForMove(data.positions, SocketManager.onClickOnPosition);
+                this.drawer.drawPositionsForMove(data.positions, this.onClickOnPosition());
             } else {
                 this.drawer.drawPositionsForMove(data.positions);
             }
         });
 
         socket.on("move", (unitState: any) => {
-            logMessage(unitState);
             this.drawer.clearPositionTiles();
-            this.drawer.updateUnit(unitState, SocketManager.onClickOnUnit);
+            this.drawer.updateUnit(unitState, this.onClickOnUnit());
+            logMessage("MOVE", unitState);
         });
 
         socket.on("endTurn", (battle: any) => {
             this.currentUnitId = battle.currentUnitId;
             this.drawer.clearPositionTiles();
             battle.unitStates.forEach(
-                (unitState: any) => this.drawer.updateUnit(unitState, SocketManager.onClickOnUnit));
+                (unitState: any) => this.drawer.updateUnit(unitState, this.onClickOnUnit()));
             logMessage("END TURN", battle);
         });
 
         socket.on("rollbackAction", (battle: any) => {
             this.drawer.clearPositionTiles();
             battle.unitStates.forEach(
-                (unitState: any) => this.drawer.updateUnit(unitState, SocketManager.onClickOnUnit));
+                (unitState: any) => this.drawer.updateUnit(unitState, this.onClickOnUnit()));
             logMessage("ROLLBACK ACTION", battle);
         });
 
         this.socket = socket;
     }
 
-    static init(drawer: Drawer, ui: TacticalUI): SocketManager {
-        if (!SocketManager.instance) {
-            SocketManager.instance = new SocketManager(drawer, ui);
+    onClickOnUnit() {
+        return (unitState: any) => {
+            logMessage("CLICK UNIT", unitState);
+            const data: any = {
+                battleId: this.battleId,
+                unitId: unitState.unit.id
+            };
+            if (this.mode === ClickMode.MOVE) {
+                data.canMove = unitState.unit.id === this.currentUnitId && !unitState.moved;
+                this.socket.emit("positions", data);
+            } else {
+                data.canAct = unitState.unit.id === this.currentUnitId && !unitState.acted;
+                data.actionTypeId = "attack";
+                this.socket.emit("actionInfo", data);
+            }
+            
         }
-        return SocketManager.instance;
     }
 
-    static onClickOnUnit(unitState: any) {
-        logMessage(unitState);
-        SocketManager.instance.socket.emit("positions", {
-            battleId: SocketManager.instance.battleId,
-            unitId: unitState.unit.id,
-            canMove: unitState.unit.id === SocketManager.instance.currentUnitId
-                && !unitState.moved
-        });
+    onClickOnPosition() {
+        return (position: any) => {
+            this.socket.emit("move", {
+                battleId: this.battleId,
+                unitId: this.currentUnitId,
+                position: position
+            });
+        }
     }
 
-    static onClickOnPosition(position: any) {
-        SocketManager.instance.socket.emit("move", {
-            battleId: SocketManager.instance.battleId,
-            unitId: SocketManager.instance.currentUnitId,
-            position: position
-        });
+    onMove() {
+        return () => this.mode = ClickMode.MOVE;
     }
 
-    static onMove() {
-        SocketManager.instance.socket.emit("positions", SocketManager.instance.battleId);
+    onAttack() {
+        return () => this.mode = ClickMode.ATTACK;
     }
 
-    static onAttack() {
-        SocketManager.instance.socket.emit("attack", SocketManager.instance.battleId);
+    onNextTurn() {
+        return () => this.socket.emit("endTurn", this.battleId);
     }
 
-    static onNextTurn() {
-        SocketManager.instance.socket.emit("endTurn", SocketManager.instance.battleId);
-    }
-
-    static onResetAction() {
-        SocketManager.instance.socket.emit("rollbackAction", SocketManager.instance.battleId);
+    onResetAction() {
+        return () => this.socket.emit("rollbackAction", this.battleId);
     }
 }
 
