@@ -97,7 +97,7 @@ export default class Drawer {
             const sprite = this.tilesSprites[p.x][p.y][p.z];
             const positionTile = new PositionSprite(sprite.width, sprite.height, color);
             this.battlefieldContainer.addPositionTile(positionTile, p.x, p.y, p.z);
-            positionTile.onClick(() => this.eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_POSITION, p));
+            positionTile.onClick(() => this.eventManager.dispatch(TacticalEvent.CLICK_ON_POSITION, p));
         });
         this.battlefieldContainer.sortByZIndex();
     }
@@ -120,8 +120,9 @@ export default class Drawer {
 
     updateUnit(unitState: any) {
         const unitSprite = this.unitsHolder.get(unitState.unit.id)!;
+        unitSprite.removeAllListeners();
         const p = unitState.position;
-        unitSprite.onClick(() => this.eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_UNIT, unitState));
+        unitSprite.onClick(() => this.eventManager.dispatch(TacticalEvent.CLICK_ON_UNIT, unitState));
 
         const tileType = this.resourcesMap.get(this.tiles[p.x][p.y][p.z]);
         let z: number = p.z;

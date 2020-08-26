@@ -1,7 +1,8 @@
-import logMessage from './ts/logger';
+import logger from './ts/logger';
 import * as PIXI from 'pixi.js';
 import TacticalUI from './ts/tactical-ui';
 import Drawer from './ts/drawer';
+import GameManager from './ts/game-manager';
 import SocketManager from './ts/socket-manager';
 import { EventManager } from "./ts/event-manager";
 import './css/style.css';
@@ -15,14 +16,15 @@ window.onload = function () {
     const eventManager = new EventManager();
     const drawer = new Drawer(app, eventManager);
     const ui = new TacticalUI(app, eventManager);
-    const socketManager = new SocketManager(drawer, ui, eventManager);
+    const socketManager = new SocketManager(eventManager);
+    const gameManager = new GameManager(drawer, ui, eventManager);
     
-    logMessage('A very warm welcome to Expack!');
+    logger.logMessage('A very warm welcome to Expack!');
 
     // Needed for Hot Module Replacement
     if (typeof (module.hot) !== 'undefined') {
         module.hot.accept();
-        logMessage("Hot deploy successful");
+        logger.logMessage("Hot deploy successful");
     }
 
     // prevent right click contextBox

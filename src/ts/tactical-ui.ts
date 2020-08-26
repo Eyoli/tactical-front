@@ -21,13 +21,13 @@ export default class TacticalUI {
 
         const ui = new UI().withMenu(800, style)
             .withButton("Move", 30,
-                () => eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_MENU_MOVE))
+                () => eventManager.dispatch(TacticalEvent.CLICK_ON_MENU_MOVE))
             .withButton("Attack", 80,
-                () => eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_MENU_ATTACK))
+                () => eventManager.dispatch(TacticalEvent.CLICK_ON_MENU_ATTACK))
             .withButton("End turn", 130,
-                () => eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_MENU_NEXT_TURN))
+                () => eventManager.dispatch(TacticalEvent.CLICK_ON_MENU_NEXT_TURN))
             .withButton("Reset turn", 180,
-                () => eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_MENU_RESET_TURN));
+                () => eventManager.dispatch(TacticalEvent.CLICK_ON_MENU_RESET_TURN));
         app.stage.addChild(ui);
     }
 }

@@ -108,7 +108,7 @@ io.on('connect', (socket) => {
 	});
 
 	type ActRequest = { battleId: string, unitId: string, position: Position, actionTypeId: string };
-	socket.on('move', (req: ActRequest) => {
+	socket.on('act', (req: ActRequest) => {
 		requestHandlerPort.act(req.battleId, req.unitId, req.position, req.actionTypeId)
 			.then((resp) => socket.emit("act", resp.data))
 			.catch((error) => catchError(error));
