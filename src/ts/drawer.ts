@@ -6,6 +6,7 @@ import WaterEffectService from './service/water-effect-service';
 import PositionResolver from './service/position-resolver';
 import TileSprite from './sprites/tile-sprite';
 import PositionSprite from './sprites/position-sprite';
+import { EventManager, TacticalEvent } from './event-manager';
 
 const TILES_TEXTURES_REPOSITORY = "./assets/tiles";
 const UNITS_TEXTURES_REPOSITORY = "./assets/units";
@@ -14,10 +15,11 @@ const SPATIAL_STEP = { x: BLOCK_SIZE / 2, y: BLOCK_SIZE / 4, z: -BLOCK_SIZE / 2 
 const ResourceLoader = PIXI.Loader.shared;
 
 const MOVE_TILE_COLOR = 0x3500FA;
-const ACT_TILE_COLOR = 0x3500FA;
+const ACT_TILE_COLOR = 0x832A2A;
 
 export default class Drawer {
     private app: PIXI.Application;
+    private eventManager: EventManager;
     private resourcesMap: Map<any, any>;
     private unitsHolder: Map<string, UnitSprite>;
     private battlefieldContainer: BattlefieldContainer;
@@ -25,7 +27,9 @@ export default class Drawer {
     private tiles!: any[][][];
     private tilesSprites: any;
 
-    constructor(application: PIXI.Application) {
+    constructor(application: PIXI.Application, eventManager: EventManager) {
+        this.eventManager = eventManager;
+
         this.app = application;
         this.resourcesMap = new Map();
         this.unitsHolder = new Map();
@@ -68,33 +72,32 @@ export default class Drawer {
         );
     }
 
-    drawUnits(unitStates: any, onClickOnUnit: Function) {
+    drawUnits(unitStates: any) {
         unitStates.forEach((unitState: any) => {
             const { position: { x, y, z } } = unitState;
             const unitSprite = new Fluffy(BLOCK_SIZE);
             this.battlefieldContainer.addUnit(unitSprite);
             this.unitsHolder.set(unitState.unit.id, unitSprite);
-            this.updateUnit(unitState, onClickOnUnit);
+            this.updateUnit(unitState);
         });
         this.battlefieldContainer.sortByZIndex();
     }
 
-    drawPositionsForMove(positions: any[], onClickOnPosition?: Function) {
-        this.drawPositions(positions, MOVE_TILE_COLOR, onClickOnPosition);
+    drawPositionsForMove(positions: any[]) {
+        this.drawPositions(positions, MOVE_TILE_COLOR);
     }
 
-    drawPositionsForAction(positions: any[], onClickOnPosition: Function) {
-        this.drawPositions(positions, ACT_TILE_COLOR, onClickOnPosition);
+    drawPositionsForAction(positions: any[]) {
+        this.drawPositions(positions, ACT_TILE_COLOR);
     }
 
-    private drawPositions(positions: any[], color: number, onClickOnPosition?: Function) {
+    private drawPositions(positions: any[], color: number) {
         this.battlefieldContainer.clearPositionTiles();
         positions.forEach(p => {
-            const positionTile = new PositionSprite(this.tilesSprites[p.x][p.y][p.z], color, onClickOnPosition);
+            const sprite = this.tilesSprites[p.x][p.y][p.z];
+            const positionTile = new PositionSprite(sprite.width, sprite.height, color);
             this.battlefieldContainer.addPositionTile(positionTile, p.x, p.y, p.z);
-            if (onClickOnPosition) {
-                positionTile.triggerOnClick(() => onClickOnPosition(p));
-            }
+            positionTile.onClick(() => this.eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_POSITION, p));
         });
         this.battlefieldContainer.sortByZIndex();
     }
@@ -103,10 +106,22 @@ export default class Drawer {
         this.battlefieldContainer.clearPositionTiles();
     }
 
-    updateUnit(unitState: any, onClickOnUnit: Function) {
+    disableClickOnUnits() {
+        this.battlefieldContainer.unitSprites.forEach(unitSprite => unitSprite.disable());
+    }
+
+    enableClickOnUnits() {
+        this.battlefieldContainer.unitSprites.forEach(unitSprite => unitSprite.enable());
+    }
+
+    updateUnits(unitStates: any[]) {
+        unitStates.forEach(unitState => this.updateUnit(unitState));
+    }
+
+    updateUnit(unitState: any) {
         const unitSprite = this.unitsHolder.get(unitState.unit.id)!;
         const p = unitState.position;
-        unitSprite.onClick(() => onClickOnUnit(unitState));
+        unitSprite.onClick(() => this.eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_UNIT, unitState));
 
         const tileType = this.resourcesMap.get(this.tiles[p.x][p.y][p.z]);
         let z: number = p.z;

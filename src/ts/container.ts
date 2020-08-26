@@ -1,15 +1,18 @@
 import * as PIXI from 'pixi.js';
 import PositionResolver from './service/position-resolver';
 import PositionSprite from './sprites/position-sprite';
+import { UnitSprite } from './sprites/unit-sprite';
 
 export default class BattlefieldContainer extends PIXI.Container {
     private positionResolver: PositionResolver;
     private positionsSprites: PositionSprite[];
+    unitSprites: UnitSprite[];
 
     constructor(positionResolver: PositionResolver) {
         super();
         this.positionResolver = positionResolver;
         this.positionsSprites = [];
+        this.unitSprites = [];
     }
 
     addTile(tileSprite: PIXI.Sprite, i: number, j: number, k: number) {
@@ -17,8 +20,9 @@ export default class BattlefieldContainer extends PIXI.Container {
         this.updatePosition(tileSprite, i, j, k);
     }
 
-    addUnit(unitSprite: PIXI.Sprite) {
+    addUnit(unitSprite: UnitSprite) {
         this.addChild(unitSprite);
+        this.unitSprites.push(unitSprite);
     }
 
     updatePosition(sprite: PIXI.DisplayObject, i: number, j: number, k: number) {

@@ -1,13 +1,10 @@
 import * as PIXI from 'pixi.js';
+import { EventManager, TacticalEvent } from './event-manager';
 
 export default class TacticalUI {
-    private style: PIXI.TextStyle;
-    private app: PIXI.Application;
 
-    constructor(app: PIXI.Application) {
-        this.app = app;
-
-        this.style = new PIXI.TextStyle({
+    constructor(app: PIXI.Application, eventManager: EventManager) {
+        const style = new PIXI.TextStyle({
             fontFamily: 'Arial',
             fontSize: 36,
             fontStyle: 'italic',
@@ -20,13 +17,31 @@ export default class TacticalUI {
             dropShadowBlur: 4,
             dropShadowAngle: Math.PI / 6,
             dropShadowDistance: 6
-        }); 
+        });
+
+        const ui = new UI().withMenu(800, style)
+            .withButton("Move", 30,
+                () => eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_MENU_MOVE))
+            .withButton("Attack", 80,
+                () => eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_MENU_ATTACK))
+            .withButton("End turn", 130,
+                () => eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_MENU_NEXT_TURN))
+            .withButton("Reset turn", 180,
+                () => eventManager.dispatchEvent(TacticalEvent.EVENT_CLICK_ON_MENU_RESET_TURN));
+        app.stage.addChild(ui);
+    }
+}
+
+class UI extends PIXI.Container {
+
+    constructor() {
+        super();
     }
 
-    withMenu(x: number) {
-        const menu = new Menu(800, this.style);
+    withMenu(x: number, style: PIXI.TextStyle) {
+        const menu = new Menu(800, style);
         menu.x = x;
-        this.app.stage.addChild(menu);
+        this.addChild(menu);
         return menu;
     }
 }

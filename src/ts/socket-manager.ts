@@ -2,6 +2,7 @@ import Drawer from "./drawer";
 import TacticalUI from "./tactical-ui";
 import io from 'socket.io-client';
 import logMessage from "./logger";
+import { TacticalEvent, EventManager } from "./event-manager";
 
 enum ClickMode {MOVE, ATTACK};
 
@@ -14,8 +15,15 @@ export default class SocketManager {
     private drawer: Drawer;
     private mode: ClickMode = ClickMode.MOVE;
 
-    constructor(drawer: Drawer, ui: TacticalUI) {
+    constructor(drawer: Drawer, ui: TacticalUI, eventManager: EventManager) {
         this.drawer = drawer;
+
+        eventManager.addEventListener(TacticalEvent.EVENT_CLICK_ON_UNIT, this.onClickOnUnit());
+        eventManager.addEventListener(TacticalEvent.EVENT_CLICK_ON_POSITION, this.onClickOnPosition());
+        eventManager.addEventListener(TacticalEvent.EVENT_CLICK_ON_MENU_MOVE, this.onMove());
+        eventManager.addEventListener(TacticalEvent.EVENT_CLICK_ON_MENU_ATTACK, this.onAttack());
+        eventManager.addEventListener(TacticalEvent.EVENT_CLICK_ON_MENU_NEXT_TURN, this.onNextTurn());
+        eventManager.addEventListener(TacticalEvent.EVENT_CLICK_ON_MENU_RESET_TURN, this.onResetAction());
 
         const socket = io('http://localhost:3001');
 
@@ -39,7 +47,7 @@ export default class SocketManager {
             this.battlefield = data;
             this.drawer.load(data.tileTypes, () => {
                 this.drawer.drawBattlefield(this.battlefield);
-                this.drawer.drawUnits(this.unitStates, this.onClickOnUnit());
+                this.drawer.drawUnits(this.unitStates);
             });
         });
 
@@ -49,31 +57,29 @@ export default class SocketManager {
 
         socket.on("positions", (data: any) => {
             logMessage("POSITIONS", data);
-            if (data.canMove) {
-                this.drawer.drawPositionsForMove(data.positions, this.onClickOnPosition());
-            } else {
-                this.drawer.drawPositionsForMove(data.positions);
-            }
+            this.drawer.drawPositionsForMove(data.positions);
+        });
+
+        socket.on("actionInfo", (data: any) => {
+            logMessage("ACTION INFO", data);
+            this.drawer.drawPositionsForAction(data.positions);
         });
 
         socket.on("move", (unitState: any) => {
-            this.drawer.clearPositionTiles();
-            this.drawer.updateUnit(unitState, this.onClickOnUnit());
+            this.drawer.updateUnit(unitState);
             logMessage("MOVE", unitState);
         });
 
         socket.on("endTurn", (battle: any) => {
             this.currentUnitId = battle.currentUnitId;
             this.drawer.clearPositionTiles();
-            battle.unitStates.forEach(
-                (unitState: any) => this.drawer.updateUnit(unitState, this.onClickOnUnit()));
+            this.drawer.updateUnits(battle.unitStates);
             logMessage("END TURN", battle);
         });
 
         socket.on("rollbackAction", (battle: any) => {
             this.drawer.clearPositionTiles();
-            battle.unitStates.forEach(
-                (unitState: any) => this.drawer.updateUnit(unitState, this.onClickOnUnit()));
+            this.drawer.updateUnits(battle.unitStates);
             logMessage("ROLLBACK ACTION", battle);
         });
 
@@ -101,7 +107,14 @@ export default class SocketManager {
 
     onClickOnPosition() {
         return (position: any) => {
-            this.socket.emit("move", {
+            let socketEvent: string;
+            if (this.mode === ClickMode.MOVE) {
+                socketEvent = "move";
+            } else {
+                socketEvent = "act";
+            }
+            this.drawer.clearPositionTiles();
+            this.socket.emit(socketEvent, {
                 battleId: this.battleId,
                 unitId: this.currentUnitId,
                 position: position
@@ -110,11 +123,17 @@ export default class SocketManager {
     }
 
     onMove() {
-        return () => this.mode = ClickMode.MOVE;
+        return () => {
+            this.drawer.clearPositionTiles();
+            this.mode = ClickMode.MOVE;
+        }
     }
 
     onAttack() {
-        return () => this.mode = ClickMode.ATTACK;
+        return () => {
+            this.drawer.clearPositionTiles();
+            this.mode = ClickMode.ATTACK;
+        }
     }
 
     onNextTurn() {

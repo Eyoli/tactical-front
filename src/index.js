@@ -3,6 +3,7 @@ import * as PIXI from 'pixi.js';
 import TacticalUI from './ts/tactical-ui';
 import Drawer from './ts/drawer';
 import SocketManager from './ts/socket-manager';
+import { EventManager } from "./ts/event-manager";
 import './css/style.css';
 
 window.onload = function () {
@@ -11,15 +12,11 @@ window.onload = function () {
     //Add the canvas that Pixi automatically created for you to the HTML document
     document.body.appendChild(app.view);
 
-    const drawer = new Drawer(app);
-    const socketManager = new SocketManager(drawer);
-    const ui = new TacticalUI(app)
-        .withMenu(800)
-        .withButton("Move", 30, socketManager.onMove())
-        .withButton("Attack", 80, socketManager.onAttack())
-        .withButton("End turn", 130, socketManager.onNextTurn())
-        .withButton("Reset turn", 180, socketManager.onResetAction());
-
+    const eventManager = new EventManager();
+    const drawer = new Drawer(app, eventManager);
+    const ui = new TacticalUI(app, eventManager);
+    const socketManager = new SocketManager(drawer, ui, eventManager);
+    
     logMessage('A very warm welcome to Expack!');
 
     // Needed for Hot Module Replacement
@@ -27,4 +24,9 @@ window.onload = function () {
         module.hot.accept();
         logMessage("Hot deploy successful");
     }
+
+    // prevent right click contextBox
+    document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+    });
 }

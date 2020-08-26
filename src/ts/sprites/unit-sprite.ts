@@ -6,6 +6,7 @@ function prepareNextAnimation(unitSprite: PIXI.AnimatedSprite) {
 }
 
 export class UnitSprite extends PIXI.AnimatedSprite {
+    hitAreaPolygone: PIXI.Polygon;
 
     constructor(textures: PIXI.Texture[], size: number) {
         super(textures);
@@ -21,20 +22,29 @@ export class UnitSprite extends PIXI.AnimatedSprite {
         this.loop = false;
 
         // interactivity
-        this.interactive = true;
-        this.buttonMode = true;
-        this.hitArea = new PIXI.Polygon([
+        this.hitAreaPolygone = new PIXI.Polygon([
             textures[0].trim.x, textures[0].trim.y,
             textures[0].trim.x + textures[0].trim.width, textures[0].trim.y,
             textures[0].trim.x + textures[0].trim.width, textures[0].trim.y + textures[0].trim.height,
             textures[0].trim.x, textures[0].trim.y + textures[0].trim.height
         ]);
+        this.enable();
 
         prepareNextAnimation(this);
     }
 
     onClick(callback: Function) {
+        this.interactive = true;
+        this.buttonMode = true;
         this.on('pointerdown', callback);
+    }
+
+    disable() {
+        this.hitArea = new PIXI.Polygon([]);
+    }
+
+    enable() {
+        this.hitArea = this.hitAreaPolygone;
     }
 }
 

@@ -96,10 +96,21 @@ io.on('connect', (socket) => {
 			.catch((error) => catchError(error));
 	});
 
-	type ActionInfoRequest = { battleId: string, unitId: string, actionTypeId: string };
+	type ActionInfoRequest = { battleId: string, unitId: string, canAct: boolean, actionTypeId: string };
 	socket.on('actionInfo', (req: ActionInfoRequest) => {
 		requestHandlerPort.actionInfo(req.battleId, req.unitId, req.actionTypeId)
-			.then((resp) => socket.emit("actionInfo", resp.data))
+			.then((resp) => socket.emit("actionInfo", {
+				positions: resp.data.positions,
+				actionType: resp.data.actionType,
+				canAct: req.canAct
+			}))
+			.catch((error) => catchError(error));
+	});
+
+	type ActRequest = { battleId: string, unitId: string, position: Position, actionTypeId: string };
+	socket.on('move', (req: ActRequest) => {
+		requestHandlerPort.act(req.battleId, req.unitId, req.position, req.actionTypeId)
+			.then((resp) => socket.emit("act", resp.data))
 			.catch((error) => catchError(error));
 	});
 

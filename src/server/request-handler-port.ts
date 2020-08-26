@@ -1,6 +1,7 @@
 type Position = { x: number, y: number, z: number };
 
 interface RequestHandlerPort {
+	act(battleId: string, unitId: string, position: Position, actionTypeId: string): Promise<any>;
 	rollbackAction(battleId: string): Promise<any>;
 	endTurn(battleId: string): Promise<any>;
 	getBattles(): Promise<any>;

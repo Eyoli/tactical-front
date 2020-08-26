@@ -8,6 +8,11 @@ export default class RequestHandler implements RequestHandlerPort {
         this.apiHost = apiHost;
     }
 
+    act(battleId: string, unitId: string, position: Position, actionTypeId: string): Promise<any> {
+        const url: string = this.apiHost + "/games/" + battleId + "/units/" + unitId + "/actions/" + actionTypeId;
+        return Axios.post(url, {position: position});
+    }
+
     actionInfo(battleId: string, unitId: string, actionTypeId: string): Promise<any> {
         const url: string = this.apiHost + "/games/" + battleId + "/units/" + unitId + "/actions/" + actionTypeId + "/info";
         return Axios.get(url);
