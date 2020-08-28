@@ -1,4 +1,6 @@
 import * as PIXI from 'pixi.js';
+import { OutlineFilter } from 'pixi-filters';
+import LifeBar from './life-bar';
 
 function prepareNextAnimation(unitSprite: PIXI.AnimatedSprite) {
     unitSprite.gotoAndPlay(0);
@@ -6,7 +8,7 @@ function prepareNextAnimation(unitSprite: PIXI.AnimatedSprite) {
 }
 
 export class UnitSprite extends PIXI.AnimatedSprite {
-    hitAreaPolygone: PIXI.Polygon;
+    lifeBar: LifeBar;
 
     constructor(textures: PIXI.Texture[], size: number) {
         super(textures);
@@ -22,29 +24,33 @@ export class UnitSprite extends PIXI.AnimatedSprite {
         this.loop = false;
 
         // interactivity
-        this.hitAreaPolygone = new PIXI.Polygon([
+        this.interactive = true;
+        this.buttonMode = true;
+        this.hitArea = new PIXI.Polygon([
             textures[0].trim.x, textures[0].trim.y,
             textures[0].trim.x + textures[0].trim.width, textures[0].trim.y,
             textures[0].trim.x + textures[0].trim.width, textures[0].trim.y + textures[0].trim.height,
             textures[0].trim.x, textures[0].trim.y + textures[0].trim.height
         ]);
-        this.enable();
+
+        // life bar
+        this.lifeBar = new LifeBar(1.2 * this.width);
+        this.lifeBar.x = 0;
+        this.lifeBar.y = this.texture.height;
+        this.addChild(this.lifeBar);
 
         prepareNextAnimation(this);
     }
 
+    withOutline() {
+        const outlineFilterBlue = new OutlineFilter(2, 0xff9999);
+        this.on('pointerover', () => this.filters = [outlineFilterBlue]);
+        this.on('pointerout', () => this.filters = []);
+        return this;
+    }
+
     onClick(callback: Function) {
-        this.interactive = true;
-        this.buttonMode = true;
         this.on('pointerdown', callback);
-    }
-
-    disable() {
-        this.hitArea = new PIXI.Polygon([]);
-    }
-
-    enable() {
-        this.hitArea = this.hitAreaPolygone;
     }
 }
 

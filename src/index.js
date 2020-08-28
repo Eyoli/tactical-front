@@ -1,10 +1,10 @@
-import logger from './ts/logger';
+import logger from './ts/game/service/logger';
 import * as PIXI from 'pixi.js';
-import TacticalUI from './ts/tactical-ui';
-import Drawer from './ts/drawer';
-import GameManager from './ts/game-manager';
-import SocketManager from './ts/socket-manager';
-import { EventManager } from "./ts/event-manager";
+import TacticalUI from './ts/pixi/adapter/tactical-ui';
+import Drawer from './ts/pixi/adapter/drawer';
+import GameManager from './ts/game/game-manager';
+import SocketManager from './ts/socket/socket-manager';
+import EventManager from "./ts/game/service/event-manager";
 import './css/style.css';
 
 window.onload = function () {

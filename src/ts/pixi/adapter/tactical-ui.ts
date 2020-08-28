@@ -1,7 +1,10 @@
 import * as PIXI from 'pixi.js';
-import { EventManager, TacticalEvent } from './event-manager';
+import EventManager from '../../game/service/event-manager';
+import UIPort from '../../game/port/ui-port';
+import { Events, Mode } from '../../game/enums';
 
-export default class TacticalUI {
+export default class TacticalUI implements UIPort {
+    ui: UI;
 
     constructor(app: PIXI.Application, eventManager: EventManager) {
         const style = new PIXI.TextStyle({
@@ -19,30 +22,55 @@ export default class TacticalUI {
             dropShadowDistance: 6
         });
 
-        const ui = new UI().withMenu(800, style)
+        this.ui = new UI().withMenu(new Menu(800, style)
             .withButton("Move", 30,
-                () => eventManager.dispatch(TacticalEvent.CLICK_ON_MENU_MOVE))
+                () => eventManager.dispatch(Events.CLICK_ON_MENU_MOVE))
             .withButton("Attack", 80,
-                () => eventManager.dispatch(TacticalEvent.CLICK_ON_MENU_ATTACK))
+                () => eventManager.dispatch(Events.CLICK_ON_MENU_ATTACK))
             .withButton("End turn", 130,
-                () => eventManager.dispatch(TacticalEvent.CLICK_ON_MENU_NEXT_TURN))
+                () => eventManager.dispatch(Events.CLICK_ON_MENU_NEXT_TURN))
             .withButton("Reset turn", 180,
-                () => eventManager.dispatch(TacticalEvent.CLICK_ON_MENU_RESET_TURN));
-        app.stage.addChild(ui);
+                () => eventManager.dispatch(Events.CLICK_ON_MENU_RESET_TURN)));
+        app.stage.addChild(this.ui);
+    }
+
+    hideEntry(mode: Mode): void {
+        if (mode === Mode.MOVE) {
+            this.ui.menus[0].hide(0);
+        } else if (mode === Mode.ACT) {
+            this.ui.menus[0].hide(1);
+        }
+    }
+
+    showEntry(mode: Mode): void {
+        if (mode === Mode.MOVE) {
+            this.ui.menus[0].show(0);
+        } else if (mode === Mode.ACT) {
+            this.ui.menus[0].show(1);
+        }
+    }
+
+    open(): void {
+        this.ui.visible = true;
+    }
+
+    close(): void {
+        this.ui.visible = false;
     }
 }
 
 class UI extends PIXI.Container {
+    readonly menus: Menu[];
 
     constructor() {
         super();
+        this.menus = [];
     }
 
-    withMenu(x: number, style: PIXI.TextStyle) {
-        const menu = new Menu(800, style);
-        menu.x = x;
+    withMenu(menu: Menu): UI {
+        this.menus.push(menu);
         this.addChild(menu);
-        return menu;
+        return this;
     }
 }
 
@@ -53,6 +81,14 @@ class Menu extends PIXI.Container {
         super();
         this.style = style;
         this.x = x;
+    }
+
+    hide(index: number): void {
+        this.children[index].visible = false;
+    }
+
+    show(index: number): void {
+        this.children[index].visible = true;
     }
 
     withButton(text: string, y: number, callback: Function) {

@@ -1,12 +1,14 @@
 import * as PIXI from 'pixi.js';
-import BattlefieldContainer from './container';
+import BattlefieldContainer from '../container';
 import path from 'path';
-import { UnitSprite, Fluffy } from './sprites/unit-sprite';
-import WaterEffectService from './service/water-effect-service';
-import PositionResolver from './service/position-resolver';
-import TileSprite from './sprites/tile-sprite';
-import PositionSprite from './sprites/position-sprite';
-import { EventManager, TacticalEvent } from './event-manager';
+import { UnitSprite, Fluffy } from '../sprites/unit-sprite';
+import WaterEffectService from '../service/water-effect-service';
+import PositionResolver from '../../game/service/position-resolver';
+import TileSprite from '../sprites/tile-sprite';
+import PositionSprite from '../sprites/position-sprite';
+import EventManager from '../../game/service/event-manager';
+import DrawerPort from '../../game/port/drawer-port';
+import { Events } from '../../game/enums';
 
 const TILES_TEXTURES_REPOSITORY = "./assets/tiles";
 const UNITS_TEXTURES_REPOSITORY = "./assets/units";
@@ -17,7 +19,7 @@ const ResourceLoader = PIXI.Loader.shared;
 const MOVE_TILE_COLOR = 0x3500FA;
 const ACT_TILE_COLOR = 0x832A2A;
 
-export default class Drawer {
+export default class Drawer implements DrawerPort {
     private app: PIXI.Application;
     private eventManager: EventManager;
     private resourcesMap: Map<any, any>;
@@ -74,9 +76,9 @@ export default class Drawer {
 
     drawUnits(unitStates: any) {
         unitStates.forEach((unitState: any) => {
-            const { position: { x, y, z } } = unitState;
             const unitSprite = new Fluffy(BLOCK_SIZE);
             this.battlefieldContainer.addUnit(unitSprite);
+            unitSprite.withOutline();
             this.unitsHolder.set(unitState.unit.id, unitSprite);
             this.updateUnit(unitState);
         });
@@ -97,7 +99,7 @@ export default class Drawer {
             const sprite = this.tilesSprites[p.x][p.y][p.z];
             const positionTile = new PositionSprite(sprite.width, sprite.height, color);
             this.battlefieldContainer.addPositionTile(positionTile, p.x, p.y, p.z);
-            positionTile.onClick(() => this.eventManager.dispatch(TacticalEvent.CLICK_ON_POSITION, p));
+            positionTile.onClick(() => this.eventManager.dispatch(Events.CLICK_ON_POSITION, p));
         });
         this.battlefieldContainer.sortByZIndex();
     }
@@ -106,33 +108,19 @@ export default class Drawer {
         this.battlefieldContainer.clearPositionTiles();
     }
 
-    disableClickOnUnits() {
-        this.battlefieldContainer.unitSprites.forEach(unitSprite => unitSprite.disable());
-    }
-
-    enableClickOnUnits() {
-        this.battlefieldContainer.unitSprites.forEach(unitSprite => unitSprite.enable());
-    }
-
     updateUnits(unitStates: any[]) {
         unitStates.forEach(unitState => this.updateUnit(unitState));
     }
 
     updateUnit(unitState: any) {
         const unitSprite = this.unitsHolder.get(unitState.unit.id)!;
-        unitSprite.removeAllListeners();
+        unitSprite.lifeBar.update(unitState.health / unitState.unit.health);
         const p = unitState.position;
-        unitSprite.onClick(() => this.eventManager.dispatch(TacticalEvent.CLICK_ON_UNIT, unitState));
+        unitSprite.removeListener("pointerdown");
+        unitSprite.onClick(() => this.eventManager.dispatch(Events.CLICK_ON_UNIT, unitState));
 
         const tileType = this.resourcesMap.get(this.tiles[p.x][p.y][p.z]);
-        let z: number = p.z;
-        if (tileType.liquid) {
-            z += 2 / 3;
-        } else {
-            z += 1;
-        }
-
-        this.battlefieldContainer.updatePosition(unitSprite, p.x, p.y, z);
+        this.battlefieldContainer.updatePosition(unitSprite, p.x, p.y, p.z + 1, tileType.liquid);
         this.battlefieldContainer.sortByZIndex();
     }
 }

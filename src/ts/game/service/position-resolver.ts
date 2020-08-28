@@ -7,7 +7,11 @@ export default class PositionResolver {
         this.spatialStep = spatialStep;
     }
 
-    resolve(i: number, j: number, k: number) {
+    resolve(i: number, j: number, k: number, inLiquid: boolean) {
+        if (inLiquid === true) {
+            k -= 1 / 3;
+        }
+
         return {
             x: (j - i) * this.spatialStep.x,
             y: (j + i) * this.spatialStep.y + k * this.spatialStep.z

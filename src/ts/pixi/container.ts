@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import PositionResolver from './service/position-resolver';
+import PositionResolver from '../game/service/position-resolver';
 import PositionSprite from './sprites/position-sprite';
 import { UnitSprite } from './sprites/unit-sprite';
 
@@ -25,8 +25,8 @@ export default class BattlefieldContainer extends PIXI.Container {
         this.unitSprites.push(unitSprite);
     }
 
-    updatePosition(sprite: PIXI.DisplayObject, i: number, j: number, k: number) {
-        const { x: xReal, y: yReal } = this.positionResolver.resolve(i, j, k);
+    updatePosition(sprite: PIXI.DisplayObject, i: number, j: number, k: number, inLiquid: boolean = false) {
+        const { x: xReal, y: yReal } = this.positionResolver.resolve(i, j, k, inLiquid);
         sprite.position.set(xReal, yReal);
         sprite.zIndex = i + j + k;
     }

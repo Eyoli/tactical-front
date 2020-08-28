@@ -1,6 +1,6 @@
-import logger from "./logger";
+export enum Mode { MOVE, ACT };
 
-export enum TacticalEvent {
+export enum Events {
     CLICK_ON_UNIT = "CLICK_ON_UNIT",
     CLICK_ON_POSITION = "CLICK_ON_POSITION",
     CLICK_ON_MENU_MOVE = "CLICK_ON_MENU_MOVE",
@@ -24,23 +24,4 @@ export enum TacticalEvent {
     MOVE = "MOVE",
     ERROR = "ERROR",
     ACT = "ACT"
-}
-
-export class EventManager {
-    private eventHolder: Map<TacticalEvent, Function>;
-
-    constructor() {
-        this.eventHolder = new Map();
-    }
-
-    listen(name: TacticalEvent, callback: Function): void {
-        this.eventHolder.set(name, callback);
-    }
-
-    dispatch(name: TacticalEvent, ...data: any[]) {
-        logger.logMessage(name.toString(), ...data);
-        if (this.eventHolder.has(name)) {
-            this.eventHolder.get(name)!(...data);
-        }
-    }
 }
