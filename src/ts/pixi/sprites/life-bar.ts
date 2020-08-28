@@ -1,4 +1,4 @@
-import { Container, Polygon, Graphics } from "pixi.js";
+import { Container, Graphics } from "pixi.js";
 
 export default class LifeBar extends Container {
     private bar: Graphics;
@@ -15,10 +15,8 @@ export default class LifeBar extends Container {
     update(fraction: number) {
         this.bar
             .clear()
-            .beginFill(0x0000FF)
-            // .drawRect(0, 0, fraction * this.length, 0.1 * this.length)
-            .drawRect(0, 0, 200, 200)
+            .beginFill(0xFF0000)
+            .drawRect(0, 0, fraction * this.length, 0.1 * this.length)
             .endFill();
-            console.log(this.bar);
     }
 }

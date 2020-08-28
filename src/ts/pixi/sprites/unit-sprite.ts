@@ -2,23 +2,15 @@ import * as PIXI from 'pixi.js';
 import { OutlineFilter } from 'pixi-filters';
 import LifeBar from './life-bar';
 
-function prepareNextAnimation(unitSprite: PIXI.AnimatedSprite) {
-    unitSprite.gotoAndPlay(0);
-    setTimeout(() => prepareNextAnimation(unitSprite), 3000 + Math.random() * 2000);
-}
-
 export class UnitSprite extends PIXI.AnimatedSprite {
     lifeBar: LifeBar;
 
     constructor(textures: PIXI.Texture[], size: number) {
         super(textures);
 
-        this.width = this.texture.width;
-        this.height = this.texture.height;
-        this.pivot.set(this.width / 2, this.height);
-        const scale = size / this.width;
+        const scale = size / this.texture.width;
         this.scale.set(scale, scale);
-
+        
         // animation
         this.animationSpeed = 0.1;
         this.loop = false;
@@ -34,12 +26,11 @@ export class UnitSprite extends PIXI.AnimatedSprite {
         ]);
 
         // life bar
-        this.lifeBar = new LifeBar(1.2 * this.width);
-        this.lifeBar.x = 0;
+        this.lifeBar = new LifeBar(this.texture.width);
         this.lifeBar.y = this.texture.height;
         this.addChild(this.lifeBar);
 
-        prepareNextAnimation(this);
+        setTimeout(this.prepareAnimation.bind(this), 3000 + Math.random() * 2000);
     }
 
     withOutline() {
@@ -52,6 +43,11 @@ export class UnitSprite extends PIXI.AnimatedSprite {
     onClick(callback: Function) {
         this.on('pointerdown', callback);
     }
+
+    private prepareAnimation() {
+        this.gotoAndPlay(0);
+        setTimeout(this.prepareAnimation.bind(this), 3000 + Math.random() * 2000);
+    }
 }
 
 export class Fluffy extends UnitSprite {
@@ -59,6 +55,7 @@ export class Fluffy extends UnitSprite {
 
     constructor(size: number) {
         super(Fluffy.getTexture(), size);
+        this.pivot.set(0, this.texture.height / 2);
     }
 
     private static getTexture() {

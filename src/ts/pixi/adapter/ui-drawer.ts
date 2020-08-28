@@ -1,10 +1,10 @@
 import * as PIXI from 'pixi.js';
 import EventManager from '../../game/service/event-manager';
-import UIPort from '../../game/port/ui-port';
+import UIDrawerPort from '../../game/port/ui-port';
 import { Events, Mode } from '../../game/enums';
 
-export default class TacticalUI implements UIPort {
-    ui: UI;
+export default class UIDrawer implements UIDrawerPort {
+    private ui: UI;
 
     constructor(app: PIXI.Application, eventManager: EventManager) {
         const style = new PIXI.TextStyle({

@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import PositionResolver from '../game/service/position-resolver';
+import PositionResolver from './service/position-resolver';
 import PositionSprite from './sprites/position-sprite';
 import { UnitSprite } from './sprites/unit-sprite';
 
@@ -13,11 +13,8 @@ export default class BattlefieldContainer extends PIXI.Container {
         this.positionResolver = positionResolver;
         this.positionsSprites = [];
         this.unitSprites = [];
-    }
-
-    addTile(tileSprite: PIXI.Sprite, i: number, j: number, k: number) {
-        this.addChild(tileSprite);
-        this.updatePosition(tileSprite, i, j, k);
+        // sort children by zIndex
+        this.sortableChildren = true;
     }
 
     addUnit(unitSprite: UnitSprite) {
@@ -25,10 +22,13 @@ export default class BattlefieldContainer extends PIXI.Container {
         this.unitSprites.push(unitSprite);
     }
 
-    updatePosition(sprite: PIXI.DisplayObject, i: number, j: number, k: number, inLiquid: boolean = false) {
-        const { x: xReal, y: yReal } = this.positionResolver.resolve(i, j, k, inLiquid);
-        sprite.position.set(xReal, yReal);
-        sprite.zIndex = i + j + k;
+    updateUnitPosition(sprite: PIXI.DisplayObject, i: number, j: number, k: number, inLiquid: boolean = false) {
+        if (inLiquid) {
+            k += 2 / 3;
+        } else {
+            k++;
+        }
+        this.positionResolver.update(sprite, i, j, k);
     }
 
     clearPositionTiles() {
@@ -38,11 +38,7 @@ export default class BattlefieldContainer extends PIXI.Container {
 
     addPositionTile(positionTile: PositionSprite, i: number, j: number, k: number) {
         this.addChild(positionTile);
-        this.updatePosition(positionTile, i, j, k);
+        this.positionResolver.update(positionTile, i, j, k);
         this.positionsSprites.push(positionTile);
-    }
-
-    sortByZIndex() {
-        this.children.sort((itemA, itemB) => itemA.zIndex - itemB.zIndex);
     }
 }

@@ -1,12 +1,12 @@
 import EventManager from "./service/event-manager";
-import DrawerPort from "./port/drawer-port";
-import UIPort from "./port/ui-port";
+import BattlefieldDrawerPort from "./port/battlefield-drawer-port";
+import UIDrawerPort from "./port/ui-port";
 import { Mode, Events } from "./enums";
 
 export default class GameManager {
     private eventManager: EventManager;
-    private drawerPort: DrawerPort;
-    private uiPort: UIPort;
+    private drawerPort: BattlefieldDrawerPort;
+    private uiPort: UIDrawerPort;
 
     private unitStates: any;
     private battlefield: any;
@@ -15,8 +15,8 @@ export default class GameManager {
     private mode: Mode = Mode.MOVE;
     private selectedUnitState?: any;
 
-    constructor(drawer: DrawerPort, uiPort: UIPort, eventManager: EventManager) {
-        this.drawerPort = drawer;
+    constructor(drawerPort: BattlefieldDrawerPort, uiPort: UIDrawerPort, eventManager: EventManager) {
+        this.drawerPort = drawerPort;
         this.uiPort = uiPort;
         this.eventManager = eventManager;
 
@@ -27,13 +27,8 @@ export default class GameManager {
         this.eventManager.listen(Events.CLICK_ON_MENU_NEXT_TURN, this.onNextTurn());
         this.eventManager.listen(Events.CLICK_ON_MENU_RESET_TURN, this.onResetAction());
 
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        this.battleId = urlParams.get('id');
-
-        this.eventManager.dispatch(Events.ASK_BATTLE, this.battleId);
-
         this.eventManager.listen(Events.BATTLE, (battle: any) => {
+            this.battleId = battle.id;
             this.unitStates = battle.unitStates;
             this.currentUnitState = battle.currentUnitState;
             this.updateUI();
@@ -44,10 +39,7 @@ export default class GameManager {
 
         this.eventManager.listen(Events.FIELD, (data: any) => {
             this.battlefield = data;
-            this.drawerPort.load(data.tileTypes, () => {
-                this.drawerPort.drawBattlefield(this.battlefield);
-                this.drawerPort.drawUnits(this.unitStates);
-            });
+            this.drawerPort.startNewBattle(this.battlefield, this.unitStates);
         });
 
         this.eventManager.listen(Events.ERROR, (error: any) => {
@@ -69,6 +61,12 @@ export default class GameManager {
 
         this.eventManager.listen(Events.ACT, (unitStates: any[]) => {
             unitStates.forEach(unitState => this.drawerPort.updateUnit(unitState));
+            unitStates
+                .filter(unitState => unitState.health.current - unitState.health.last !== 0)
+                .forEach(unitState => this.drawerPort.drawDamage(
+                    unitState,
+                    unitState.health.current - unitState.health.last));
+
             this.uiPort.hideEntry(Mode.ACT);
         });
 
@@ -81,8 +79,8 @@ export default class GameManager {
         });
 
         this.eventManager.listen(Events.ROLLBACK_ACTION, (battle: any) => {
-            this.drawerPort.updateUnits(battle.unitStates);
             this.currentUnitState = battle.currentUnitState;
+            this.drawerPort.updateUnits(battle.unitStates);
             this.resetSelection();
             this.updateUI();
         });
@@ -164,7 +162,7 @@ export default class GameManager {
 
     private updateUI() {
         this.currentUnitState.moved ? this.uiPort.hideEntry(Mode.MOVE) : this.uiPort.showEntry(Mode.MOVE);
-        this.currentUnitState.moved ? this.uiPort.hideEntry(Mode.ACT) : this.uiPort.showEntry(Mode.ACT);
+        this.currentUnitState.acted ? this.uiPort.hideEntry(Mode.ACT) : this.uiPort.showEntry(Mode.ACT);
     }
 }
 

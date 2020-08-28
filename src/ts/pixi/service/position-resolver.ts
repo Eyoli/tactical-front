@@ -7,14 +7,12 @@ export default class PositionResolver {
         this.spatialStep = spatialStep;
     }
 
-    resolve(i: number, j: number, k: number, inLiquid: boolean) {
-        if (inLiquid === true) {
-            k -= 1 / 3;
-        }
-
-        return {
+    update(sprite: PIXI.DisplayObject, i: number, j: number, k: number) {
+        const { x: xReal, y: yReal } = {
             x: (j - i) * this.spatialStep.x,
             y: (j + i) * this.spatialStep.y + k * this.spatialStep.z
         };
+        sprite.position.set(xReal, yReal);
+        sprite.zIndex = i + j + k;
     }
 }

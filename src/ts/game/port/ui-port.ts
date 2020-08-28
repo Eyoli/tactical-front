@@ -1,6 +1,6 @@
 import { Mode } from "../enums";
 
-export default interface UIPort {
+export default interface UIDrawerPort {
     open(): void;
     close(): void;
     showEntry(mode: Mode): void;

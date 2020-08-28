@@ -1,13 +1,17 @@
 import * as PIXI from 'pixi.js';
+import { MotionBlurFilter } from 'pixi-filters';
 
 export default class WaterEffectService {
     private displacementSprite: PIXI.Sprite;
+    displacementFilter: PIXI.filters.DisplacementFilter;
+    alphaFilter: PIXI.filters.AlphaFilter;
 
     constructor(app: PIXI.Application) {
         const dContainer = new PIXI.Container();
         const dRenderTexture = PIXI.RenderTexture.create({
-            width: app.renderer.width, 
-            height: app.renderer.height});
+            width: app.renderer.width,
+            height: app.renderer.height
+        });
         const ripplesR = WaterEffectService.createRipples(app.renderer.width, app.renderer.height, 0, 6);
         const ripplesG = WaterEffectService.createRipples(app.renderer.width, app.renderer.height, 1, 7);
         this.displacementSprite = new PIXI.Sprite(dRenderTexture);
@@ -24,24 +28,25 @@ export default class WaterEffectService {
         xformR.position.set(app.renderer.width * 0.5, app.renderer.height * 0.25);
         xformG.position.set(app.renderer.width * 0.5, app.renderer.height * 0.75);
 
+        this.displacementFilter = new PIXI.filters.DisplacementFilter(this.displacementSprite);
+        this.displacementFilter.scale.x = 6;
+        this.displacementFilter.scale.y = 6;
+
+        this.alphaFilter = new PIXI.filters.AlphaFilter(0.5);
+
         app.ticker.add(function () {
             xformR.rotation += 0.01;//  0.2*Math.PI;
             xformG.rotation -= 0.0025;//-0.1*Math.PI;  
             ripplesR.tileTransform = xformR;
             ripplesG.tileTransform = xformG;
 
-            // ripplesR.tilePosition.x+=1.5;
-            // ripplesG.tilePosition.y-=1.9;
             app.renderer.render(dContainer, dRenderTexture);
             phase += 0.005;
         });
     }
 
-    applyOn(sprite: PIXI.Sprite) {
-        const displacementFilter = new PIXI.filters.DisplacementFilter(this.displacementSprite);
-        sprite.filters = [displacementFilter];
-        displacementFilter.scale.x = 7;
-        displacementFilter.scale.y = 7;
+    applyOn(displayObject: PIXI.DisplayObject, waterfall: boolean = false) {
+        displayObject.filters = [this.displacementFilter, this.alphaFilter];
     }
 
     static createRipples(width: number, height: number, channel: number, freq: number) {

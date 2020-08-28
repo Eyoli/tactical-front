@@ -14,7 +14,6 @@ export default class PositionSprite extends PIXI.Graphics {
             width / 2, height / 2,
         ]);
         this.endFill();
-        this.pivot.set(this.width / 2, 2 * this.height);
     }
 
     onClick(callback: Function) {
