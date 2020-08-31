@@ -4,24 +4,28 @@ import * as PIXI from "pixi.js";
 import PositionResolver from "./service/position-resolver";
 import path from 'path';
 import ResourcesManager from "./service/resources-manager";
+import PositionSprite from "./sprites/position-sprite";
+import { Position } from "../game/types";
 
 export default class FieldHolder {
     private waterEffectService: WaterEffectService;
     private positionResolver: PositionResolver;
-    resourcesManager: ResourcesManager;
+    private resourcesManager: ResourcesManager;
 
     private tilesSprites: any[][][];
+    private positionsSprites: PositionSprite[];
     private tileTypes: Map<string, any>;
     private tiles!: any[][][];
     private blockSize: number;
-    
-    constructor(blockSize: number, waterEffectService: WaterEffectService, positionResolver: PositionResolver, 
+
+    constructor(blockSize: number, waterEffectService: WaterEffectService, positionResolver: PositionResolver,
         resourcesManager: ResourcesManager) {
         this.waterEffectService = waterEffectService;
         this.positionResolver = positionResolver;
         this.resourcesManager = resourcesManager;
 
         this.tileTypes = new Map();
+        this.positionsSprites = [];
         this.tilesSprites = [];
         this.blockSize = blockSize;
     }
@@ -42,7 +46,7 @@ export default class FieldHolder {
                         const sprite = this.createTileSprite(
                             tile,
                             k > 0 ? tiles[i][j][k - 1] : undefined,
-                            i, j, k);
+                            {x: i, y: j, z: k});
                         container.addChild(sprite);
                         return sprite;
                     }
@@ -51,29 +55,41 @@ export default class FieldHolder {
         );
     }
 
-    getTile(i: number, j: number, k: number): TileSprite {
-        return this.tilesSprites[i][j][k];
+    addPositionTile(color: number, p: Position, container: PIXI.Container) {
+        const sprite = this.tilesSprites[p.x][p.y][p.z];
+        const positionTile = new PositionSprite(sprite.width, sprite.height, color);
+        container.addChild(positionTile);
+
+        this.positionResolver.update(positionTile, p);
+        this.positionsSprites.push(positionTile);
+        return positionTile;
     }
 
-    isLiquid(i: number, j: number, k: number): boolean {
-        return this.tileTypes.get(this.tiles[i][j][k]).liquid;
+    clearPositionTiles(container: PIXI.Container) {
+        container.removeChild(...this.positionsSprites);
+        this.positionsSprites = [];
     }
 
-    private createTileSprite(tile: any, tileUnder: any, i: number, j: number, k: number): TileSprite {
+    isLiquid(p: Position): boolean {
+        return this.tileTypes.get(this.tiles[p.x][p.y][p.z]).liquid;
+    }
+
+    private createTileSprite(tile: any, tileUnder: any, p: Position): TileSprite {
         const tileType = this.tileTypes.get(tile);
         const tileSprite = new TileSprite(this.resourcesManager.get(tileType.src), this.blockSize);
+        let z = p.z;
 
         if (tileType.liquid) {
             let waterfall = false;
-            if (k > 0) {
+            if (p.z > 0) {
                 const tileTypeUnder = this.tileTypes.get(tileUnder);
                 waterfall = tileTypeUnder.liquid;
             }
             this.waterEffectService.applyOn(tileSprite, waterfall);
-            k -= 0.4;
+            p.z -= 0.4;
         }
 
-        this.positionResolver.update(tileSprite, i, j, k);
+        this.positionResolver.update(tileSprite, p);
         return tileSprite;
     }
 }

@@ -7,6 +7,7 @@ import SocketManager from './ts/socket/socket-manager';
 import EventManager from "./ts/game/service/event-manager";
 import './css/style.css';
 import { Events } from './ts/game/enums';
+import { handleMouseWheel, handleMouseDrag } from './ts/pixi/canvas-events';
 
 // trick to use pixi-layers
 window.PIXI = PIXI;
@@ -17,6 +18,9 @@ window.onload = function () {
     
     //Add the canvas that Pixi automatically created for you to the HTML document
     document.body.appendChild(app.view);
+
+    handleMouseWheel(app);
+    handleMouseDrag(app);
 
     const eventManager = new EventManager();
     const drawer = new BattlefieldDrawer(app, eventManager);
