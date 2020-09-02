@@ -8,5 +8,8 @@
     },
     "process": {
         "title": "tactical-front"
+    },
+    "logger": {
+        "enabled": true
     }
 }
