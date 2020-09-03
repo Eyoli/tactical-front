@@ -10,21 +10,13 @@ describe("When playing we should be able to...", () => {
 
     const eventManager = new EventManager();
     const battlefieldDrawer = new FakeBattlefieldDrawer();
-    const gameManager = new GameManager(battlefieldDrawer, new FakeUIDrawer(), eventManager);
+    const uiDrawer = new FakeUIDrawer();
+    const gameManager = new GameManager(battlefieldDrawer, uiDrawer, eventManager);
+
 
     it("Start a battle", () => {
         // arrange
-        const battleState = {
-            id: "battleId",
-            fieldId: "fieldId",
-            currentUnitState: {
-                unit: {
-                    id: "unitId"
-                },
-                moved: false,
-                acted: false
-            }
-        };
+        const battleState = aBattleState();
         eventManager.listen(Events.ASK_FIELD, () => {
             eventManager.dispatch(Events.FIELD, {});
         });
@@ -34,6 +26,8 @@ describe("When playing we should be able to...", () => {
 
         // assert
         assert.deepStrictEqual(battlefieldDrawer.battleStarted, true);
+        assert.deepStrictEqual(uiDrawer.showMoveEntry, true);
+        assert.deepStrictEqual(uiDrawer.showActEntry, true);
     });
 
     it("Get accessible positions for a unit", () => {
@@ -61,12 +55,13 @@ describe("When playing we should be able to...", () => {
 
         // assert
         assert.deepStrictEqual(battlefieldDrawer.unitUpdatedAfterMove, true);
+        assert.deepStrictEqual(uiDrawer.showMoveEntry, false);
     });
 
     it("Get information about an action", () => {
         // arrange
         eventManager.listen(Events.ASK_ACTION_INFO, () => {
-            eventManager.dispatch(Events.ACTION_INFO, {});
+            eventManager.dispatch(Events.ACTION_INFO, {actionType: {}});
         });
 
         // act
@@ -75,6 +70,22 @@ describe("When playing we should be able to...", () => {
 
         // assert
         assert.deepStrictEqual(battlefieldDrawer.positionsForActionDrawn, true);
+        assert.deepStrictEqual(battlefieldDrawer.areaDrawingActivated, false);
+    });
+
+    it("Get information about an action with area", () => {
+        // arrange
+        eventManager.listen(Events.ASK_ACTION_INFO, () => {
+            eventManager.dispatch(Events.ACTION_INFO, {actionType: {area: 2}});
+        });
+
+        // act
+        eventManager.dispatch(Events.CLICK_ON_MENU_ATTACK);
+        eventManager.dispatch(Events.CLICK_ON_UNIT, {unit: {id: "unitId"}});
+
+        // assert
+        assert.deepStrictEqual(battlefieldDrawer.positionsForActionDrawn, true);
+        assert.deepStrictEqual(battlefieldDrawer.areaDrawingActivated, true);
     });
 
     it("Do an action", () => {
@@ -88,6 +99,21 @@ describe("When playing we should be able to...", () => {
 
         // assert
         assert.deepStrictEqual(battlefieldDrawer.unitUpdatedAfterAction, true);
+        assert.deepStrictEqual(uiDrawer.showActEntry, false);
+    });
+
+    it("Rollback an action", () => {
+        // arrange
+        const battleState = aBattleState();
+        eventManager.listen(Events.ASK_ROLLBACK_ACTION, () => {
+            eventManager.dispatch(Events.ROLLBACK_ACTION, battleState);
+        });
+
+        // act
+        eventManager.dispatch(Events.CLICK_ON_MENU_RESET_TURN, {});
+
+        // assert
+        assert.deepStrictEqual(uiDrawer.showActEntry, true);
     });
 
     it("End a turn", () => {
@@ -102,4 +128,18 @@ describe("When playing we should be able to...", () => {
         // assert
         assert.deepStrictEqual(battlefieldDrawer.unitsUpdated, true);
     });
+
+    function aBattleState() {
+        return {
+            id: "battleId",
+            fieldId: "fieldId",
+            currentUnitState: {
+                unit: {
+                    id: "unitId"
+                },
+                moved: false,
+                acted: false
+            }
+        };
+    }
 });

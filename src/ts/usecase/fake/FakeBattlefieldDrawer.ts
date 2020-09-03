@@ -7,6 +7,10 @@ export default class FakeBattlefieldDrawer implements BattlefieldDrawerPort {
     unitUpdatedAfterMove: boolean = false;
     unitUpdatedAfterAction: boolean = false;
     unitsUpdated: boolean = false;
+    areaDrawingActivated: boolean = false;
+
+    constructor() {
+    }
 
     clearPositionTiles(): void {
     }
@@ -27,15 +31,19 @@ export default class FakeBattlefieldDrawer implements BattlefieldDrawerPort {
     }
 
     updateUnit(unitState: any): void {
-        if (unitState.moved === true) {
+        if (unitState.moved) {
             this.unitUpdatedAfterMove = true;
-        } else if (unitState.acted === true) {
+        } else if (unitState.acted) {
             this.unitUpdatedAfterAction = true;
         }
     }
 
     updateUnits(unitStates: any): void {
         this.unitsUpdated = true;
+    }
+
+    activateAreaDrawing(actionType: any): void {
+        this.areaDrawingActivated = true;
     }
 
 }

@@ -143,4 +143,7 @@ export default class BattlefieldDrawer implements BattlefieldDrawerPort {
         const unitSprite = this.unitsHolder.getUnit(unitState.unit.id)!;
         this.damageText.display(damage, unitSprite.x, unitSprite.y);
     }
+
+    activateAreaDrawing(actionType: any): void {
+    }
 }
