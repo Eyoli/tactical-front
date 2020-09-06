@@ -8,7 +8,7 @@ import BattlefieldDrawerPort from '../../game/port/battlefield-drawer-port';
 import { Events } from '../../game/enums';
 import FieldHolder from '../field-holder';
 import ResourcesManager from '../service/resources-manager';
-import logger from '../../game/service/logger';
+import TacticalStage from '../tactical-stage';
 
 const BLOCK_SIZE = 64;
 const SPATIAL_STEP = {
@@ -46,45 +46,42 @@ class BattlefieldContainer extends PIXI.Container {
 }
 
 export default class BattlefieldDrawer implements BattlefieldDrawerPort {
-    private app: PIXI.Application;
+    private stage: TacticalStage;
     private eventManager: EventManager;
+    private waterEffectService: WaterEffectService;
 
     private resourcesManager: ResourcesManager;
     private battlefieldContainer!: BattlefieldContainer;
     private fieldHolder!: FieldHolder;
     private unitsHolder!: UnitsHolder;
-    private statsLayer!: PIXI.display.Layer;
     private damageText!: Damage;
-
-    constructor(app: PIXI.Application, eventManager: EventManager) {
+    
+    constructor(stage: TacticalStage, eventManager: EventManager, waterEffectService: WaterEffectService) {
+        this.stage = stage;
         this.eventManager = eventManager;
-        this.app = app;
-        this.app.stage = new PIXI.display.Stage();
+        this.waterEffectService = waterEffectService;
         this.resourcesManager = new ResourcesManager();
-
     }
 
     startNewBattle(field: any, unitStates: any) {
-        this.unitsHolder = new UnitsHolder(BLOCK_SIZE, new PositionResolver(SPATIAL_STEP));
+        this.unitsHolder = new UnitsHolder(BLOCK_SIZE, this.resourcesManager, new PositionResolver(SPATIAL_STEP));
 
         this.fieldHolder = new FieldHolder(BLOCK_SIZE,
-            new WaterEffectService(this.app),
+            this.waterEffectService,
             new PositionResolver(SPATIAL_STEP),
             this.resourcesManager);
 
         this.battlefieldContainer = new BattlefieldContainer();
-        this.statsLayer = new PIXI.display.Layer();
 
         this.battlefieldContainer.removeChildren();
-        const P0 = { x: (this.app.renderer.screen.width / 2), y: (this.app.renderer.screen.height / 3) };
-        this.battlefieldContainer.position.set(P0.x, P0.y);
+        this.battlefieldContainer.position.set(this.stage.center.x, this.stage.center.y);
 
         this.damageText = new Damage();
         this.battlefieldContainer.addChild(this.damageText);
-        this.damageText.parentLayer = this.statsLayer;
-        this.app.stage.addChild(
+        this.damageText.parentLayer = this.stage.statsLayer;
+        this.stage.addChild(
             this.battlefieldContainer,
-            this.statsLayer);
+            this.stage.statsLayer);
 
         this.fieldHolder.loadTileTypes(field.tileTypes);
         this.resourcesManager.loadThen(() => {
@@ -102,7 +99,7 @@ export default class BattlefieldDrawer implements BattlefieldDrawerPort {
     private drawUnits(unitStates: any) {
         unitStates.forEach((unitState: any) => {
             const unitSprite = this.unitsHolder.addUnit(unitState, this.battlefieldContainer);
-            unitSprite.lifeBar.parentLayer = this.statsLayer;
+            unitSprite.lifeBar.parentLayer = this.stage.statsLayer;
             this.updateUnit(unitState);
         });
     }

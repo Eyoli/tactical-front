@@ -1,6 +1,7 @@
-import config from 'config';
+// import config from 'config';
 
-const enabled: boolean = config.get("logger.enabled");
+// const enabled: boolean = config.get("logger.enabled");
+const enabled: boolean = true;
 let logMessage;
 let logError;
 if (enabled) {

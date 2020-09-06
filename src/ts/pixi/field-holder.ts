@@ -86,7 +86,7 @@ export default class FieldHolder {
                 waterfall = tileTypeUnder.liquid;
             }
             this.waterEffectService.applyOn(tileSprite, waterfall);
-            p.z -= 0.4;
+            p.z -= 0.3;
         }
 
         this.positionResolver.update(tileSprite, p);

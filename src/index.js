@@ -8,10 +8,8 @@ import EventManager from "./ts/game/service/event-manager";
 import './css/style.css';
 import { Events } from './ts/game/enums';
 import { handleMouseWheel, handleMouseDrag } from './ts/pixi/canvas-events';
-
-// trick to use pixi-layers
-window.PIXI = PIXI;
-require("pixi-layers");
+import TacticalStage from './ts/pixi/tactical-stage';
+import WaterEffectService from './ts/pixi/service/water-effect-service';
 
 window.onload = function () {
     const app = new PIXI.Application({ width: 1000, height: 600 });
@@ -22,8 +20,11 @@ window.onload = function () {
     handleMouseWheel(app);
     handleMouseDrag(app);
 
+    const tacticalStage = new TacticalStage(app.renderer.view.width, app.renderer.view.height);
+    app.stage = tacticalStage;
     const eventManager = new EventManager();
-    const drawer = new BattlefieldDrawer(app, eventManager);
+    const waterEffectService = new WaterEffectService(app);
+    const drawer = new BattlefieldDrawer(tacticalStage, eventManager, waterEffectService);
     const ui = new UIDrawer(app, eventManager);
     const socketManager = new SocketManager(eventManager);
     const gameManager = new GameManager(drawer, ui, eventManager);
