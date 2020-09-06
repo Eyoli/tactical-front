@@ -52,6 +52,9 @@ export default class GameManager {
 
         this.eventManager.listen(Events.ACTION_INFO, (data: any) => {
             this.drawerPort.drawPositionsForAction(data.positions);
+            if (data.actionType.area) {
+                this.drawerPort.activateAreaDrawing(data.actionType);
+            }
         });
 
         this.eventManager.listen(Events.MOVE, (unitState: any) => {
@@ -100,7 +103,7 @@ export default class GameManager {
                     data.actionTypeId = "attack";
                     this.eventManager.dispatch(Events.ASK_ACTION_INFO, data);
                 }
-            } else if (this.selectedUnitState.unit.id !== unitState.unit.id) {
+            } else if (!this.isSelectedUnit(unitState)) {
                 this.onClickOnPosition()(unitState.position);
             }
         }
@@ -114,11 +117,11 @@ export default class GameManager {
                 position: position
             };
             if (this.mode === Mode.MOVE
-                && this.selectedUnitState.unit.id === this.currentUnitState.unit.id
+                && this.isSelectedUnit(this.currentUnitState)
                 && !this.selectedUnitState.moved) {
                 this.eventManager.dispatch(Events.ASK_MOVE, data);
             } else if (this.mode === Mode.ACT
-                && this.selectedUnitState.unit.id === this.currentUnitState.unit.id
+                && this.isSelectedUnit(this.currentUnitState)
                 && !this.selectedUnitState.acted) {
                 data.actionTypeId = "attack";
                 this.eventManager.dispatch(Events.ASK_ACT, data);
@@ -163,6 +166,10 @@ export default class GameManager {
     private updateUI() {
         this.currentUnitState.moved ? this.uiPort.hideEntry(Mode.MOVE) : this.uiPort.showEntry(Mode.MOVE);
         this.currentUnitState.acted ? this.uiPort.hideEntry(Mode.ACT) : this.uiPort.showEntry(Mode.ACT);
+    }
+
+    private isSelectedUnit(unitState: any): boolean {
+        return this.selectedUnitState.unit.id === unitState.unit.id;
     }
 }
 
