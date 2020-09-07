@@ -20,18 +20,17 @@ export default class GameManager {
         this.uiPort = uiPort;
         this.eventManager = eventManager;
 
-        this.eventManager.listen(Events.CLICK_ON_UNIT, this.onClickOnUnit());
-        this.eventManager.listen(Events.CLICK_ON_POSITION, this.onClickOnPosition());
-        this.eventManager.listen(Events.CLICK_ON_MENU_MOVE, this.onMove());
-        this.eventManager.listen(Events.CLICK_ON_MENU_ATTACK, this.onAttack());
-        this.eventManager.listen(Events.CLICK_ON_MENU_NEXT_TURN, this.onNextTurn());
-        this.eventManager.listen(Events.CLICK_ON_MENU_RESET_TURN, this.onResetAction());
+        this.eventManager.listen(Events.CLICK_ON_UNIT, this.onClickOnUnit.bind(this));
+        this.eventManager.listen(Events.CLICK_ON_POSITION, this.onClickOnPosition.bind(this));
+        this.eventManager.listen(Events.CLICK_ON_MENU_MOVE, this.onMove.bind(this));
+        this.eventManager.listen(Events.CLICK_ON_MENU_ATTACK, this.onAttack.bind(this));
+        this.eventManager.listen(Events.CLICK_ON_MENU_NEXT_TURN, this.onNextTurn.bind(this));
+        this.eventManager.listen(Events.CLICK_ON_MENU_RESET_TURN, this.onResetAction.bind(this));
 
         this.eventManager.listen(Events.BATTLE, (battle: any) => {
             this.battleId = battle.id;
             this.unitStates = battle.unitStates;
             this.currentUnitState = battle.currentUnitState;
-            this.updateUI();
             if (battle.fieldId && !this.battlefield) {
                 this.eventManager.dispatch(Events.ASK_FIELD, battle.fieldId);
             }
@@ -59,7 +58,6 @@ export default class GameManager {
 
         this.eventManager.listen(Events.MOVE, (unitState: any) => {
             this.drawerPort.updateUnit(unitState);
-            this.uiPort.hideEntry(Mode.MOVE);
         });
 
         this.eventManager.listen(Events.ACT, (unitStates: any[]) => {
@@ -69,15 +67,11 @@ export default class GameManager {
                 .forEach(unitState => this.drawerPort.drawDamage(
                     unitState,
                     unitState.health.current - unitState.health.last));
-
-            this.uiPort.hideEntry(Mode.ACT);
         });
 
         this.eventManager.listen(Events.END_TURN, (battle: any) => {
             this.currentUnitState = battle.currentUnitState;
             this.drawerPort.updateUnits(battle.unitStates);
-            this.uiPort.showEntry(Mode.MOVE);
-            this.uiPort.showEntry(Mode.ACT);
             this.resetSelection();
         });
 
@@ -85,87 +79,71 @@ export default class GameManager {
             this.currentUnitState = battle.currentUnitState;
             this.drawerPort.updateUnits(battle.unitStates);
             this.resetSelection();
-            this.updateUI();
         });
     }
 
-    onClickOnUnit() {
-        return (unitState: any) => {
-            if (!this.selectedUnitState) {
-                this.selectedUnitState = unitState;
-                const data: any = {
-                    battleId: this.battleId,
-                    unitId: unitState.unit.id
-                };
-                if (this.mode === Mode.MOVE) {
-                    this.eventManager.dispatch(Events.ASK_POSITIONS, data);
-                } else {
-                    data.actionTypeId = "attack";
-                    this.eventManager.dispatch(Events.ASK_ACTION_INFO, data);
-                }
-            } else if (!this.isSelectedUnit(unitState)) {
-                this.onClickOnPosition()(unitState.position);
-            }
+    onClickOnUnit(unitState: any) {
+        if (!this.selectedUnitState) {
+            this.selectedUnitState = unitState;
+            this.uiPort.open(unitState);
+        } else if (!this.isSelectedUnit(unitState)) {
+            this.onClickOnPosition(unitState.position);
         }
     }
 
-    onClickOnPosition() {
-        return (position: any) => {
-            const data: any = {
-                battleId: this.battleId,
-                unitId: this.currentUnitState.unit.id,
-                position: position
-            };
-            if (this.mode === Mode.MOVE
-                && this.isSelectedUnit(this.currentUnitState)
-                && !this.selectedUnitState.moved) {
-                this.eventManager.dispatch(Events.ASK_MOVE, data);
-            } else if (this.mode === Mode.ACT
-                && this.isSelectedUnit(this.currentUnitState)
-                && !this.selectedUnitState.acted) {
-                data.actionTypeId = "attack";
-                this.eventManager.dispatch(Events.ASK_ACT, data);
-            }
-            this.resetSelection();
+    onClickOnPosition(position: any) {
+        const data: any = {
+            battleId: this.battleId,
+            unitId: this.currentUnitState.unit.id,
+            position: position
+        };
+        if (this.mode === Mode.MOVE
+            && this.isSelectedUnit(this.currentUnitState)
+            && !this.selectedUnitState.moved) {
+            this.eventManager.dispatch(Events.ASK_MOVE, data);
+        } else if (this.mode === Mode.ACT
+            && this.isSelectedUnit(this.currentUnitState)
+            && !this.selectedUnitState.acted) {
+            data.actionTypeId = "attack";
+            this.eventManager.dispatch(Events.ASK_ACT, data);
         }
+        this.resetSelection();
     }
 
     onMove() {
-        return () => {
-            this.mode = Mode.MOVE;
-            this.resetSelection();
-        }
+        this.mode = Mode.MOVE;
+        this.uiPort.close();
+        const data: any = {
+            battleId: this.battleId,
+            unitId: this.selectedUnitState.unit.id
+        };
+        this.eventManager.dispatch(Events.ASK_POSITIONS, data);
     }
 
     onAttack() {
-        return () => {
-            this.mode = Mode.ACT;
-            this.resetSelection();
-        }
+        this.mode = Mode.ACT;
+        this.uiPort.close();
+        const data: any = {
+            battleId: this.battleId,
+            unitId: this.selectedUnitState.unit.id,
+            actionTypeId: "attack"
+        };
+        this.eventManager.dispatch(Events.ASK_ACTION_INFO, data);
     }
 
     onNextTurn() {
-        return () => {
-            this.eventManager.dispatch(Events.ASK_END_TURN, this.battleId);
-            this.resetSelection();
-        }
+        this.eventManager.dispatch(Events.ASK_END_TURN, this.battleId);
+        this.resetSelection();
     }
 
     onResetAction() {
-        return () => {
-            this.eventManager.dispatch(Events.ASK_ROLLBACK_ACTION, this.battleId);
-            this.resetSelection();
-        }
+        this.eventManager.dispatch(Events.ASK_ROLLBACK_ACTION, this.battleId);
+        this.resetSelection();
     }
 
     private resetSelection() {
         this.drawerPort.clearPositionTiles();
         this.selectedUnitState = undefined;
-    }
-
-    private updateUI() {
-        this.currentUnitState.moved ? this.uiPort.hideEntry(Mode.MOVE) : this.uiPort.showEntry(Mode.MOVE);
-        this.currentUnitState.acted ? this.uiPort.hideEntry(Mode.ACT) : this.uiPort.showEntry(Mode.ACT);
     }
 
     private isSelectedUnit(unitState: any): boolean {

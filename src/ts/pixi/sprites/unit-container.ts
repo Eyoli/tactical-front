@@ -45,8 +45,4 @@ export default class UnitContainer extends PIXI.Container {
             }
         });
     }
-
-    onClick(callback: Function) {
-        this.on('pointerdown', callback);
-    }
 }

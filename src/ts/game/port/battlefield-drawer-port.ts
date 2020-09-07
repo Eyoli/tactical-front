@@ -1,4 +1,5 @@
 export default interface BattlefieldDrawerPort {
+    activateAreaDrawing(actionType: any): void;
     drawPositionsForMove(positions: any): void;
     drawPositionsForAction(positions: any): void;
     updateUnit(unitState: any): void;

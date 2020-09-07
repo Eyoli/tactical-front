@@ -26,8 +26,6 @@ describe("When playing we should be able to...", () => {
 
         // assert
         assert.deepStrictEqual(battlefieldDrawer.battleStarted, true);
-        assert.deepStrictEqual(uiDrawer.showMoveEntry, true);
-        assert.deepStrictEqual(uiDrawer.showActEntry, true);
     });
 
     it("Get accessible positions for a unit", () => {
@@ -37,8 +35,8 @@ describe("When playing we should be able to...", () => {
         });
 
         // act
-        eventManager.dispatch(Events.CLICK_ON_MENU_MOVE);
         eventManager.dispatch(Events.CLICK_ON_UNIT, {unit: {id: "unitId"}});
+        eventManager.dispatch(Events.CLICK_ON_MENU_MOVE);
 
         // assert
         assert.deepStrictEqual(battlefieldDrawer.positionsForMoveDrawn, true);
@@ -55,7 +53,6 @@ describe("When playing we should be able to...", () => {
 
         // assert
         assert.deepStrictEqual(battlefieldDrawer.unitUpdatedAfterMove, true);
-        assert.deepStrictEqual(uiDrawer.showMoveEntry, false);
     });
 
     it("Get information about an action", () => {
@@ -65,8 +62,8 @@ describe("When playing we should be able to...", () => {
         });
 
         // act
-        eventManager.dispatch(Events.CLICK_ON_MENU_ATTACK);
         eventManager.dispatch(Events.CLICK_ON_UNIT, {unit: {id: "unitId"}});
+        eventManager.dispatch(Events.CLICK_ON_MENU_ATTACK);
 
         // assert
         assert.deepStrictEqual(battlefieldDrawer.positionsForActionDrawn, true);
@@ -99,7 +96,6 @@ describe("When playing we should be able to...", () => {
 
         // assert
         assert.deepStrictEqual(battlefieldDrawer.unitUpdatedAfterAction, true);
-        assert.deepStrictEqual(uiDrawer.showActEntry, false);
     });
 
     it("Rollback an action", () => {
@@ -113,7 +109,6 @@ describe("When playing we should be able to...", () => {
         eventManager.dispatch(Events.CLICK_ON_MENU_RESET_TURN, {});
 
         // assert
-        assert.deepStrictEqual(uiDrawer.showActEntry, true);
     });
 
     it("End a turn", () => {

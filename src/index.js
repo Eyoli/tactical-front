@@ -25,7 +25,7 @@ window.onload = function () {
     const eventManager = new EventManager();
     const waterEffectService = new WaterEffectService(app);
     const drawer = new BattlefieldDrawer(tacticalStage, eventManager, waterEffectService);
-    const ui = new UIDrawer(app, eventManager);
+    const ui = new UIDrawer(tacticalStage, eventManager);
     const socketManager = new SocketManager(eventManager);
     const gameManager = new GameManager(drawer, ui, eventManager);
 
