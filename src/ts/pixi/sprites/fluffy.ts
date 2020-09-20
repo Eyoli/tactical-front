@@ -1,5 +1,3 @@
-import UnitContainer from "./unit-container";
-
 export default class Fluffy extends PIXI.AnimatedSprite {
     private static textures: PIXI.Texture[];
 

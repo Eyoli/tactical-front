@@ -1,8 +1,9 @@
 import * as PIXI from 'pixi.js';
 import EventManager from '../../game/service/event-manager';
-import UIDrawerPort from '../../game/port/ui-port';
-import { Events, Mode } from '../../game/enums';
+import UIDrawerPort from '../../game/port/ui-drawer-port';
+import { Events } from '../../game/enums';
 import TacticalStage from '../tactical-stage';
+import { UnitState } from '../../game/types';
 
 export default class UIDrawer implements UIDrawerPort {
     private ui: UI;
@@ -13,7 +14,7 @@ export default class UIDrawer implements UIDrawerPort {
 
         const style = new PIXI.TextStyle({
             fontFamily: 'Arial',
-            fontSize: 28,
+            fontSize: 24,
             fontStyle: 'italic',
             fontWeight: 'bold',
             fill: ['#ffffff', '#00ff99'], // gradient
@@ -26,7 +27,7 @@ export default class UIDrawer implements UIDrawerPort {
             dropShadowDistance: 6
         });
 
-        this.ui = new UI().withMenu(new Menu(800, 50, style)
+        this.ui = new UI().withMenu(new Menu(800, 40, style)
             .withButton("Move",
                 () => eventManager.dispatch(Events.CLICK_ON_MENU_MOVE))
             .withButton("Attack",
@@ -34,21 +35,23 @@ export default class UIDrawer implements UIDrawerPort {
             .withButton("End turn",
                 () => eventManager.dispatch(Events.CLICK_ON_MENU_NEXT_TURN))
             .withButton("Reset turn",
-                () => eventManager.dispatch(Events.CLICK_ON_MENU_RESET_TURN)));
+                () => eventManager.dispatch(Events.CLICK_ON_MENU_RESET_TURN))
+            .withButton("Info",
+                () => eventManager.dispatch(Events.CLICK_ON_MENU_INFO)));
         this.stage.addChild(this.ui);
         this.ui.parentLayer = this.stage.statsLayer;
-
-        this.stage.on("rightclick", () => this.close());
 
         this.close();
     }
 
-    open(unitState: any): void {
-        unitState.moved ? this.ui.menus[0].show(0) : this.ui.menus[0].hide(0);
-        unitState.acted ? this.ui.menus[0].show(1) : this.ui.menus[0].hide(1);
+    open(unitState: UnitState, active: boolean): void {
+        active && !unitState.moved ? this.ui.menus[0].show(0) : this.ui.menus[0].hide(0);
+        active && !unitState.acted ? this.ui.menus[0].show(1) : this.ui.menus[0].hide(1);
+        active ? this.ui.menus[0].show(2) : this.ui.menus[0].hide(2);
+        active ? this.ui.menus[0].show(3) : this.ui.menus[0].hide(3);
 
         const unitContainer = this.stage.unitsHolder.getUnit(unitState.unit.id);
-        const position = unitContainer.toGlobal({x:0,y:0});
+        const position = unitContainer.toGlobal({ x: 0, y: 0 });
         this.ui.menus[0].position.set(position.x + this.stage.blockSize, position.y);
         this.ui.visible = true;
     }

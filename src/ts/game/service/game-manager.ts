@@ -1,19 +1,21 @@
-import EventManager from "./service/event-manager";
-import BattlefieldDrawerPort from "./port/battlefield-drawer-port";
-import UIDrawerPort from "./port/ui-port";
-import { Mode, Events } from "./enums";
+import EventManager from "./event-manager";
+import BattlefieldDrawerPort from "../port/battlefield-drawer-port";
+import UIDrawerPort from "../port/ui-drawer-port";
+import { Mode, Events } from "../enums";
+import { UnitState } from "../types";
+import { Position } from "../../../server/request-handler-port";
 
 export default class GameManager {
     private eventManager: EventManager;
     private drawerPort: BattlefieldDrawerPort;
     private uiPort: UIDrawerPort;
 
-    private unitStates: any;
+    private unitStates!: UnitState[];
     private battlefield: any;
-    private currentUnitState: any;
-    private battleId: any;
+    private battleId!: string;
     private mode: Mode = Mode.MOVE;
-    private selectedUnitState?: any;
+    private currentUnitState!: UnitState;
+    private selectedUnitState?: UnitState;
 
     constructor(drawerPort: BattlefieldDrawerPort, uiPort: UIDrawerPort, eventManager: EventManager) {
         this.drawerPort = drawerPort;
@@ -56,11 +58,11 @@ export default class GameManager {
             }
         });
 
-        this.eventManager.listen(Events.MOVE, (unitState: any) => {
-            this.drawerPort.updateUnit(unitState);
+        this.eventManager.listen(Events.MOVE, (unitState: UnitState) => {
+            this.drawerPort.moveUnit(unitState);
         });
 
-        this.eventManager.listen(Events.ACT, (unitStates: any[]) => {
+        this.eventManager.listen(Events.ACT, (unitStates: UnitState[]) => {
             unitStates.forEach(unitState => this.drawerPort.updateUnit(unitState));
             unitStates
                 .filter(unitState => unitState.health.current - unitState.health.last !== 0)
@@ -80,18 +82,23 @@ export default class GameManager {
             this.drawerPort.updateUnits(battle.unitStates);
             this.resetSelection();
         });
+
+        this.eventManager.listen(Events.CLICK_ON_CLOSE_MENU, () => {
+            this.uiPort.close();
+            this.selectedUnitState = undefined;
+        });
     }
 
-    onClickOnUnit(unitState: any) {
+    onClickOnUnit(unitState: UnitState) {
         if (!this.selectedUnitState) {
             this.selectedUnitState = unitState;
-            this.uiPort.open(unitState);
-        } else if (!this.isSelectedUnit(unitState)) {
+            this.uiPort.open(unitState, this.isSelectedUnit(this.currentUnitState));
+        } else if (!this.isSelectedUnit(unitState) && this.mode === Mode.ACT) {
             this.onClickOnPosition(unitState.position);
         }
     }
 
-    onClickOnPosition(position: any) {
+    onClickOnPosition(position: Position) {
         const data: any = {
             battleId: this.battleId,
             unitId: this.currentUnitState.unit.id,
@@ -99,11 +106,11 @@ export default class GameManager {
         };
         if (this.mode === Mode.MOVE
             && this.isSelectedUnit(this.currentUnitState)
-            && !this.selectedUnitState.moved) {
+            && !this.selectedUnitState!.moved) {
             this.eventManager.dispatch(Events.ASK_MOVE, data);
         } else if (this.mode === Mode.ACT
             && this.isSelectedUnit(this.currentUnitState)
-            && !this.selectedUnitState.acted) {
+            && !this.selectedUnitState!.acted) {
             data.actionTypeId = "attack";
             this.eventManager.dispatch(Events.ASK_ACT, data);
         }
@@ -115,7 +122,7 @@ export default class GameManager {
         this.uiPort.close();
         const data: any = {
             battleId: this.battleId,
-            unitId: this.selectedUnitState.unit.id
+            unitId: this.selectedUnitState!.unit.id
         };
         this.eventManager.dispatch(Events.ASK_POSITIONS, data);
     }
@@ -125,7 +132,7 @@ export default class GameManager {
         this.uiPort.close();
         const data: any = {
             battleId: this.battleId,
-            unitId: this.selectedUnitState.unit.id,
+            unitId: this.selectedUnitState!.unit.id,
             actionTypeId: "attack"
         };
         this.eventManager.dispatch(Events.ASK_ACTION_INFO, data);
@@ -133,11 +140,13 @@ export default class GameManager {
 
     onNextTurn() {
         this.eventManager.dispatch(Events.ASK_END_TURN, this.battleId);
+        this.uiPort.close();
         this.resetSelection();
     }
 
     onResetAction() {
         this.eventManager.dispatch(Events.ASK_ROLLBACK_ACTION, this.battleId);
+        this.uiPort.close();
         this.resetSelection();
     }
 
@@ -146,8 +155,8 @@ export default class GameManager {
         this.selectedUnitState = undefined;
     }
 
-    private isSelectedUnit(unitState: any): boolean {
-        return this.selectedUnitState.unit.id === unitState.unit.id;
+    private isSelectedUnit(unitState: UnitState): boolean {
+        return this.selectedUnitState!.unit.id === unitState.unit.id;
     }
 }
 

@@ -1,11 +1,29 @@
 import * as PIXI from 'pixi.js';
 import ResourcesManager from "../service/resources-manager";
 
-export class CrusaderRight extends PIXI.AnimatedSprite {
-    private static textures: PIXI.Texture[];
+abstract class CrusaderIdle extends PIXI.AnimatedSprite {
+
+    protected prepareAnimation(min: number, max: number) {
+        setTimeout(
+            (() => {
+                this.gotoAndPlay(0);
+                this.prepareAnimation(min, max);
+            }).bind(this),
+            min + Math.random() * (max - min));
+    }
+}
+
+class Right extends CrusaderIdle {
 
     constructor(size: number, resourcesManager: ResourcesManager) {
-        super(CrusaderRight.getTextures(resourcesManager));
+        const textures = [];
+        for (let i = 0; i < 16; i++) {
+            const name = "crusader_idle_100" + i.toString().padStart(2, '0');
+            const texture = resourcesManager.get(name);
+            textures.push(texture);
+        }
+
+        super(textures);
 
         // animation
         this.animationSpeed = 0.1;
@@ -23,32 +41,21 @@ export class CrusaderRight extends PIXI.AnimatedSprite {
 
         this.pivot.set(71, 50);
 
-        setTimeout(this.prepareAnimation.bind(this), 3000 + Math.random() * 2000);
-    }
-
-    private prepareAnimation() {
-        this.gotoAndPlay(0);
-        setTimeout(this.prepareAnimation.bind(this), 3000 + Math.random() * 2000);
-    }
-
-    private static getTextures(resourcesManager: ResourcesManager) {
-        if (!this.textures) {
-            this.textures = [];
-            for (let i = 0; i < 16; i++) {
-                const name = "crusader_idle_100" + i.toString().padStart(2, '0');
-                const texture = resourcesManager.get(name);
-                this.textures.push(texture);
-            }
-        }
-        return this.textures;
+        this.prepareAnimation(3000, 5000);
     }
 }
 
-export class CrusaderUp extends PIXI.AnimatedSprite {
-    private static textures: PIXI.Texture[];
+class Up extends CrusaderIdle {
 
     constructor(size: number, resourcesManager: ResourcesManager) {
-        super(CrusaderUp.getTextures(resourcesManager));
+        const textures = [];
+        for (let i = 0; i < 16; i++) {
+            const name = "crusader_idle_300" + i.toString().padStart(2, '0');
+            const texture = resourcesManager.get(name);
+            textures.push(texture);
+        }
+
+        super(textures);
 
         // animation
         this.animationSpeed = 0.1;
@@ -66,32 +73,21 @@ export class CrusaderUp extends PIXI.AnimatedSprite {
 
         this.pivot.set(71, 50);
 
-        setTimeout(this.prepareAnimation.bind(this), 3000 + Math.random() * 2000);
-    }
-
-    private prepareAnimation() {
-        this.gotoAndPlay(0);
-        setTimeout(this.prepareAnimation.bind(this), 3000 + Math.random() * 2000);
-    }
-
-    private static getTextures(resourcesManager: ResourcesManager) {
-        if (!this.textures) {
-            this.textures = [];
-            for (let i = 0; i < 16; i++) {
-                const name = "crusader_idle_300" + i.toString().padStart(2, '0');
-                const texture = resourcesManager.get(name);
-                this.textures.push(texture);
-            }
-        }
-        return this.textures;
+        this.prepareAnimation(3000, 5000);
     }
 }
 
-export class CrusaderLeft extends PIXI.AnimatedSprite {
-    private static textures: PIXI.Texture[];
+class Left extends CrusaderIdle {
 
     constructor(size: number, resourcesManager: ResourcesManager) {
-        super(CrusaderLeft.getTextures(resourcesManager));
+        const textures = [];
+        for (let i = 0; i < 16; i++) {
+            const name = "crusader_idle_500" + i.toString().padStart(2, '0');
+            const texture = resourcesManager.get(name);
+            textures.push(texture);
+        }
+
+        super(textures);
 
         // animation
         this.animationSpeed = 0.1;
@@ -109,32 +105,21 @@ export class CrusaderLeft extends PIXI.AnimatedSprite {
 
         this.pivot.set(71, 50);
 
-        setTimeout(this.prepareAnimation.bind(this), 3000 + Math.random() * 2000);
-    }
-
-    private prepareAnimation() {
-        this.gotoAndPlay(0);
-        setTimeout(this.prepareAnimation.bind(this), 3000 + Math.random() * 2000);
-    }
-
-    private static getTextures(resourcesManager: ResourcesManager) {
-        if (!this.textures) {
-            this.textures = [];
-            for (let i = 0; i < 16; i++) {
-                const name = "crusader_idle_500" + i.toString().padStart(2, '0');
-                const texture = resourcesManager.get(name);
-                this.textures.push(texture);
-            }
-        }
-        return this.textures;
+        this.prepareAnimation(3000, 5000);
     }
 }
 
-export class CrusaderDown extends PIXI.AnimatedSprite {
-    private static textures: PIXI.Texture[];
+class Down extends CrusaderIdle {
 
     constructor(size: number, resourcesManager: ResourcesManager) {
-        super(CrusaderDown.getTextures(resourcesManager));
+        const textures = [];
+        for (let i = 0; i < 16; i++) {
+            const name = "crusader_idle_700" + i.toString().padStart(2, '0');
+            const texture = resourcesManager.get(name);
+            textures.push(texture);
+        }
+
+        super(textures);
 
         // animation
         this.animationSpeed = 0.1;
@@ -152,23 +137,11 @@ export class CrusaderDown extends PIXI.AnimatedSprite {
 
         this.pivot.set(71, 50);
 
-        setTimeout(this.prepareAnimation.bind(this), 3000 + Math.random() * 2000);
-    }
-
-    private prepareAnimation() {
-        this.gotoAndPlay(0);
-        setTimeout(this.prepareAnimation.bind(this), 3000 + Math.random() * 2000);
-    }
-
-    private static getTextures(resourcesManager: ResourcesManager) {
-        if (!this.textures) {
-            this.textures = [];
-            for (let i = 0; i < 16; i++) {
-                const name = "crusader_idle_700" + i.toString().padStart(2, '0');
-                const texture = resourcesManager.get(name);
-                this.textures.push(texture);
-            }
-        }
-        return this.textures;
+        this.prepareAnimation(3000, 5000);
     }
 }
+
+const Crusader = {
+    Idle: { Down, Up, Left, Right }
+};
+export default Crusader;

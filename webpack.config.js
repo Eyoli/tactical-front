@@ -64,7 +64,7 @@ module.exports = {
         new webpack.NoEmitOnErrorsPlugin(),
         new CopyPlugin({
             patterns: [{
-                from: './src/img',
+                from: './src/img/taken',
                 to: 'assets'
             }]
         })

@@ -1,4 +1,4 @@
-import GameManager from "../game/game-manager";
+import GameManager from "../game/service/game-manager";
 import EventManager from "../game/service/event-manager";
 import FakeBattlefieldDrawer from "./fake/FakeBattlefieldDrawer";
 import FakeUIDrawer from "./fake/FakeUIDrawer";
@@ -52,7 +52,7 @@ describe("When playing we should be able to...", () => {
         eventManager.dispatch(Events.CLICK_ON_POSITION, {});
 
         // assert
-        assert.deepStrictEqual(battlefieldDrawer.unitUpdatedAfterMove, true);
+        assert.deepStrictEqual(battlefieldDrawer.unitMoved, true);
     });
 
     it("Get information about an action", () => {
@@ -100,8 +100,10 @@ describe("When playing we should be able to...", () => {
 
     it("Rollback an action", () => {
         // arrange
+        let rollbackAsked = false; 
         const battleState = aBattleState();
         eventManager.listen(Events.ASK_ROLLBACK_ACTION, () => {
+            rollbackAsked = true;
             eventManager.dispatch(Events.ROLLBACK_ACTION, battleState);
         });
 
@@ -109,6 +111,7 @@ describe("When playing we should be able to...", () => {
         eventManager.dispatch(Events.CLICK_ON_MENU_RESET_TURN, {});
 
         // assert
+        assert.deepStrictEqual(rollbackAsked, true);
     });
 
     it("End a turn", () => {

@@ -7,6 +7,7 @@ export enum Events {
     CLICK_ON_MENU_ATTACK = "CLICK_ON_MENU_ATTACK",
     CLICK_ON_MENU_NEXT_TURN = "CLICK_ON_MENU_NEXT_TURN",
     CLICK_ON_MENU_RESET_TURN = "CLICK_ON_MENU_RESET_TURN",
+    CLICK_ON_MENU_INFO = "CLICK_ON_MENU_INFO",
     ASK_BATTLE = "ASK_BATTLE",
     ASK_FIELD = "ASK_FIELD",
     ASK_END_TURN = "ASK_END_TURN",
@@ -23,7 +24,8 @@ export enum Events {
     ACTION_INFO = "ACTION_INFO",
     MOVE = "MOVE",
     ERROR = "ERROR",
-    ACT = "ACT"
+    ACT = "ACT",
+    CLICK_ON_CLOSE_MENU = "CLICK_ON_CLOSE_MENU"
 }
 
 export enum Direction {

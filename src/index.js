@@ -2,7 +2,7 @@ import logger from './ts/game/service/logger';
 import * as PIXI from 'pixi.js';
 import UIDrawer from './ts/pixi/adapter/ui-drawer';
 import BattlefieldDrawer from './ts/pixi/adapter/battlefield-drawer';
-import GameManager from './ts/game/game-manager';
+import GameManager from './ts/game/service/game-manager';
 import SocketManager from './ts/socket/socket-manager';
 import EventManager from "./ts/game/service/event-manager";
 import './css/style.css';

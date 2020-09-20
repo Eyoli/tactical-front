@@ -20,6 +20,7 @@ export default class Damage extends Text {
     }
 
     display(damage: number, x: number, y: number) {
+        this.visible = true;
         this.text = damage.toString();
         this.alpha = 1;
         this.x = x;
@@ -31,6 +32,7 @@ export default class Damage extends Text {
         this.alpha -= 0.01;
         if (this.alpha <= 0) {
             Ticker.shared.remove(this.animate, this);
+            this.visible = false;
         }
     }
 }

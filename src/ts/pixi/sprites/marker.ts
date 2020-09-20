@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-export default class PositionSprite extends PIXI.Graphics {
+export default class Marker extends PIXI.Graphics {
 
     constructor(width: number, height: number, color: number, alpha: number = 0.5) {
         super();
