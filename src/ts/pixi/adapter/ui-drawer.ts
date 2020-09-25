@@ -101,7 +101,7 @@ class Menu extends PIXI.Container {
         this.children[index].visible = true;
     }
 
-    withButton(text: string, callback: Function) {
+    withButton(text: string, callback: () => void) {
         const button = new Button(text, this.style, callback);
         button.y = this.children.length * this.dy;
         this.addChild(button);
@@ -111,7 +111,7 @@ class Menu extends PIXI.Container {
 
 class Button extends PIXI.Text {
 
-    constructor(text: string, style: PIXI.TextStyle, callback: Function) {
+    constructor(text: string, style: PIXI.TextStyle, callback: () => void) {
         super(text, style);
 
         this.interactive = true;

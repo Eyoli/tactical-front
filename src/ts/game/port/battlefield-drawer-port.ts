@@ -10,5 +10,4 @@ export default interface BattlefieldDrawerPort {
     updateUnits(unitStates: UnitState[]): void;
     startNewBattle(field: any, unitStates: UnitState[]): void;
     drawDamage(unitState: UnitState, damage: number): void;
-    activateAreaDrawing(actionType: any): void;
 }

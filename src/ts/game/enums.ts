@@ -1,4 +1,4 @@
-export enum Mode { MOVE, ACT };
+export enum Mode { MOVE, ACT }
 
 export enum Events {
     CLICK_ON_UNIT = "CLICK_ON_UNIT",

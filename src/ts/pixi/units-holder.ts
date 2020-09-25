@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import PositionResolver from './service/position-resolver';
-import { UnitContainer, UnitMode } from './sprites/unit-container';
+import { UnitContainer } from './sprites/unit-container';
 import { Position } from '../../server/request-handler-port';
 import ResourcesManager from './service/resources-manager';
 import { Direction } from '../game/enums';
@@ -21,19 +21,8 @@ export default class UnitsHolder {
         this.unitContainers = new Map();
     }
 
-    addUnit(unitState: UnitState, container: PIXI.Container) {
-        const unitContainer = new UnitContainer(this.blockSize).withOutline();
-        unitContainer
-            .withIdleMode(new UnitMode()
-                .withFace(Direction.LEFT, new Crusader.Idle.Left(this.blockSize, this.resourcesManager))
-                .withFace(Direction.UP, new Crusader.Idle.Up(this.blockSize, this.resourcesManager))
-                .withFace(Direction.RIGHT, new Crusader.Idle.Right(this.blockSize, this.resourcesManager))
-                .withFace(Direction.DOWN, new Crusader.Idle.Down(this.blockSize, this.resourcesManager)))
-            .withMoveMode(new UnitMode() 
-                .withFace(Direction.LEFT, new Crusader.Idle.Left(this.blockSize, this.resourcesManager))
-                .withFace(Direction.UP, new Crusader.Idle.Up(this.blockSize, this.resourcesManager))
-                .withFace(Direction.RIGHT, new Crusader.Idle.Right(this.blockSize, this.resourcesManager))
-                .withFace(Direction.DOWN, new Crusader.Idle.Down(this.blockSize, this.resourcesManager)));
+    addUnit(unitState: UnitState, container: PIXI.Container): UnitContainer {
+        const unitContainer = new Crusader(this.blockSize, this.resourcesManager).withOutline();
 
         unitContainer.idle(Direction.DOWN);
         this.unitContainers.set(unitState.unit.id, unitContainer);
@@ -41,7 +30,7 @@ export default class UnitsHolder {
         return unitContainer;
     }
 
-    updateUnit(unitState: UnitState, p: Position, inLiquid: boolean = false) {
+    updateUnit(unitState: UnitState, p: Position, inLiquid = false): UnitContainer {
         const unitContainer = this.getUnit(unitState.unit.id);
         unitContainer.lifeBar.update(unitState.health.current / unitState.unit.statistics.health);
 
@@ -53,7 +42,7 @@ export default class UnitsHolder {
         return unitContainer;
     }
 
-    moveUnit(unitState: UnitState, onComplete: Function) {
+    moveUnit(unitState: UnitState, onComplete: (unitContainer: UnitContainer) => void): void {
         const unitContainer = this.getUnit(unitState.unit.id);
         const moveAnimation = new MoveAnimation(unitContainer, unitState.path);
         moveAnimation.onUpdate((p: Position) => {
@@ -63,7 +52,11 @@ export default class UnitsHolder {
         moveAnimation.start();
     }
 
-    getUnit(unitId: string) {
-        return this.unitContainers.get(unitId)!;
+    getUnit(unitId: string): UnitContainer {
+        const unitContainer = this.unitContainers.get(unitId);
+        if (!unitContainer) {
+            throw new Error("No sprite for this unit");
+        }
+        return unitContainer;
     }
 }

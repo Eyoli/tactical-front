@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 
 export default class Marker extends PIXI.Graphics {
 
-    constructor(width: number, height: number, color: number, alpha: number = 0.5) {
+    constructor(width: number, height: number, color: number, alpha = 0.5) {
         super();
 
         this.lineStyle(0);
@@ -16,7 +16,7 @@ export default class Marker extends PIXI.Graphics {
         this.endFill();
     }
 
-    onClick(callback: Function) {
+    onClick(callback: () => void): void {
         this.interactive = true;
         this.buttonMode = true;
         this.on('pointerdown', callback);

@@ -2,16 +2,17 @@ import BattlefieldDrawerPort from "../../game/port/battlefield-drawer-port";
 import { UnitState } from "../../game/types";
 
 export default class FakeBattlefieldDrawer implements BattlefieldDrawerPort {
-    battleStarted: boolean = false;
-    positionsForMoveDrawn: boolean = false;
-    positionsForActionDrawn: boolean = false;
-    unitUpdatedAfterMove: boolean = false;
-    unitUpdatedAfterAction: boolean = false;
-    unitsUpdated: boolean = false;
-    areaDrawingActivated: boolean = false;
-    unitMoved: boolean = false;
+    battleStarted = false;
+    positionsForMoveDrawn = false;
+    positionsForActionDrawn = false;
+    unitUpdatedAfterMove = false;
+    unitUpdatedAfterAction = false;
+    unitsUpdated = false;
+    areaDrawingActivated = false;
+    unitMoved = false;
 
     constructor() {
+        //
     }
 
     moveUnit(unitState: any): void {
@@ -19,9 +20,11 @@ export default class FakeBattlefieldDrawer implements BattlefieldDrawerPort {
     }
 
     clearPositionTiles(): void {
+        //
     }
 
     drawDamage(unitStates: any, damage: number): void {
+        //
     }
 
     drawPositionsForAction(positions: any): void {

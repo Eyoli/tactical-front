@@ -9,22 +9,35 @@ export default class ResourcesManager {
         this.loader.add("fluffy", path.join(TEXTURES_REPOSITORY, "units", "fluffy-red-opt.json"));
 
         for (let i = 0; i < 16; i++) {
-            const rightIdle = "crusader_idle_100" + i.toString().padStart(2, '0');
-            const upIdle = "crusader_idle_300" + i.toString().padStart(2, '0');
-            const leftIdle = "crusader_idle_500" + i.toString().padStart(2, '0');
-            const downIdle = "crusader_idle_700" + i.toString().padStart(2, '0');
-            this.loader.add(downIdle, path.join(TEXTURES_REPOSITORY, "crusader", "idle", downIdle + ".png"));
-            this.loader.add(upIdle, path.join(TEXTURES_REPOSITORY, "crusader", "idle", upIdle + ".png"));
-            this.loader.add(rightIdle, path.join(TEXTURES_REPOSITORY, "crusader", "idle", rightIdle + ".png"));
-            this.loader.add(leftIdle, path.join(TEXTURES_REPOSITORY, "crusader", "idle", leftIdle + ".png"));
+            const crusader = {
+                idle: {
+                    right: `crusader_idle_100${ i.toString().padStart(2, '0') }`,
+                    up: `crusader_idle_300${ i.toString().padStart(2, '0') }`,
+                    left: `crusader_idle_500${ i.toString().padStart(2, '0') }`,
+                    down: `crusader_idle_700${ i.toString().padStart(2, '0') }`,
+                },
+                walk: {
+                    right: `crusader_walk_100${ i.toString().padStart(2, '0') }`,
+                    up: `crusader_walk_300${ i.toString().padStart(2, '0') }`,
+                    left: `crusader_walk_500${ i.toString().padStart(2, '0') }`,
+                    down: `crusader_walk_700${ i.toString().padStart(2, '0') }`,
+                }
+            }
+            for (const mode of Object.entries(crusader)) {
+                for (const direction of Object.entries(mode[1])) {
+                    this.loader.add(direction[1], 
+                        path.join(TEXTURES_REPOSITORY, "crusader", mode[0], direction[1] + ".png"));
+                }
+            }
+            
         }
     }
 
-    addTileResource(key: string) {
+    addTileResource(key: string): void {
         this.loader.add(key, path.join(TEXTURES_REPOSITORY, key));
     }
 
-    loadThen(callback: any) {
+    loadThen(callback: () => void): void {
         this.loader.load(callback);
     }
 

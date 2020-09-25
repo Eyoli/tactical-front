@@ -1,4 +1,3 @@
-import * as PIXI from 'pixi.js';
 import UnitsHolder from '../units-holder';
 import WaterEffectService from '../service/water-effect-service';
 import PositionResolver from '../service/position-resolver';
@@ -34,7 +33,7 @@ export default class BattlefieldDrawer implements BattlefieldDrawerPort {
         this.resourcesManager = new ResourcesManager();
     }
 
-    startNewBattle(field: any, unitStates: UnitState[]) {
+    startNewBattle(field: any, unitStates: UnitState[]): void {
         this.stage.unitsHolder = new UnitsHolder(
             this.stage.blockSize, this.resourcesManager, this.positionResolver);
 
@@ -86,38 +85,38 @@ export default class BattlefieldDrawer implements BattlefieldDrawerPort {
     }
 
     private drawUnits(unitStates: UnitState[]) {
-        unitStates.forEach((unitState: any) => {
+        unitStates.forEach((unitState: UnitState) => {
             const unitSprite = this.stage.unitsHolder.addUnit(unitState, this.stage.battlefieldContainer);
             unitSprite.lifeBar.parentLayer = this.stage.statsLayer;
             this.updateUnit(unitState);
         });
     }
 
-    drawPositionsForMove(positions: Position[]) {
+    drawPositionsForMove(positions: Position[]): void {
         this.drawPositions(positions, MOVE_TILE_COLOR);
     }
 
-    drawPositionsForAction(positions: Position[]) {
+    drawPositionsForAction(positions: Position[]): void {
         this.drawPositions(positions, ACT_TILE_COLOR);
     }
 
     private drawPositions(positions: Position[], color: number) {
         this.stage.fieldHolder.clearPositionTiles(this.stage.battlefieldContainer);
         positions.forEach(p => {
-            const positionTile = this.stage.fieldHolder.addPositionTile(color, p, this.stage.battlefieldContainer);
-            positionTile.onClick(() => this.eventManager.dispatch(Events.CLICK_ON_POSITION, p));
+            const marker = this.stage.fieldHolder.addPositionTile(color, p, this.stage.battlefieldContainer);
+            marker.onClick(() => this.eventManager.dispatch(Events.CLICK_ON_POSITION, p));
         });
     }
 
-    clearPositionTiles() {
+    clearPositionTiles(): void {
         this.stage.fieldHolder.clearPositionTiles(this.stage.battlefieldContainer);
     }
 
-    updateUnits(unitStates: UnitState[]) {
+    updateUnits(unitStates: UnitState[]): void {
         unitStates.forEach(unitState => this.updateUnit(unitState));
     }
 
-    updateUnit(unitState: UnitState) {
+    updateUnit(unitState: UnitState): void {
         const p = unitState.position;
         const isLiquid = this.stage.fieldHolder.isLiquid(p);
         const unitContainer = this.stage.unitsHolder.updateUnit(unitState, p, isLiquid);
@@ -136,11 +135,12 @@ export default class BattlefieldDrawer implements BattlefieldDrawerPort {
         });
     }
 
-    drawDamage(unitState: UnitState, damage: number) {
+    drawDamage(unitState: UnitState, damage: number): void {
         const unitSprite = this.stage.unitsHolder.getUnit(unitState.unit.id)!;
         this.damageText.display(damage, unitSprite.x, unitSprite.y);
     }
 
     activateAreaDrawing(actionType: any): void {
+        throw new Error();
     }
 }

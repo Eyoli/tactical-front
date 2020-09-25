@@ -1,14 +1,16 @@
 import logger from "./logger";
 import { Events } from "../enums";
 
+type EventListener = (...args: any[]) => void;
+
 export default class EventManager {
-    private eventHolder: Map<Events, Function[]>;
+    private eventHolder: Map<Events, EventListener[]>;
 
     constructor() {
         this.eventHolder = new Map();
     }
 
-    listen(name: Events, listener: Function): void {
+    listen(name: Events, listener: EventListener): void {
         let listeners = this.eventHolder.get(name);
         if (!listeners) {
             listeners = [];

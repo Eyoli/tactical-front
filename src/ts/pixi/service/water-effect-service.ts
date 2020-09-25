@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import { MotionBlurFilter } from 'pixi-filters';
 
 export default class WaterEffectService {
     private displacementSprite: PIXI.Sprite;
@@ -24,7 +23,7 @@ export default class WaterEffectService {
 
         const xformR = new PIXI.Transform();
         const xformG = new PIXI.Transform();
-        let phase = 0;
+        // let phase = 0;
         xformR.position.set(app.renderer.width * 0.5, app.renderer.height * 0.25);
         xformG.position.set(app.renderer.width * 0.5, app.renderer.height * 0.75);
 
@@ -41,15 +40,15 @@ export default class WaterEffectService {
             ripplesG.tileTransform = xformG;
 
             app.renderer.render(dContainer, dRenderTexture);
-            phase += 0.005;
+            // phase += 0.005;
         });
     }
 
-    applyOn(displayObject: PIXI.DisplayObject, waterfall: boolean = false) {
+    applyOn(displayObject: PIXI.DisplayObject, waterfall = false): void {
         displayObject.filters = [this.displacementFilter, this.alphaFilter];
     }
 
-    static createRipples(width: number, height: number, channel: number, freq: number) {
+    static createRipples(width: number, height: number, channel: number, freq: number): PIXI.TilingSprite {
         const cvo = new PIXI.utils.CanvasRenderTarget(500, 500);
         const cv = cvo.canvas;
         const ctx = cvo.context;
@@ -66,18 +65,18 @@ export default class WaterEffectService {
         ctx.fillStyle = grd;
         ctx.save();
         ctx.scale(1 / freq, 1);
-        for (var i = 0; i < freq; i++) {
+        for (let i = 0; i < freq; i++) {
             ctx.fillRect(0, 0, 500, 500);
             ctx.translate(500, 0);
         }
         ctx.restore();
         ctx.scale(1, 1 / freq);
         ctx.fillStyle = grd2;
-        for (var i = 0; i < freq; i++) {
+        for (let i = 0; i < freq; i++) {
             ctx.fillRect(0, 0, 500, 500);
             ctx.translate(0, 500);
         }
-        var ripples = new PIXI.TilingSprite(PIXI.Texture.from(cv), width, height);
+        const ripples = new PIXI.TilingSprite(PIXI.Texture.from(cv), width, height);
         ripples.blendMode = PIXI.BLEND_MODES.ADD;
         return ripples;
     }

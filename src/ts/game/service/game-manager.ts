@@ -89,7 +89,7 @@ export default class GameManager {
         });
     }
 
-    onClickOnUnit(unitState: UnitState) {
+    onClickOnUnit(unitState: UnitState): void {
         if (!this.selectedUnitState) {
             this.selectedUnitState = unitState;
             this.uiPort.open(unitState, this.isSelectedUnit(this.currentUnitState));
@@ -98,7 +98,7 @@ export default class GameManager {
         }
     }
 
-    onClickOnPosition(position: Position) {
+    onClickOnPosition(position: Position): void {
         const data: any = {
             battleId: this.battleId,
             unitId: this.currentUnitState.unit.id,
@@ -106,18 +106,18 @@ export default class GameManager {
         };
         if (this.mode === Mode.MOVE
             && this.isSelectedUnit(this.currentUnitState)
-            && !this.selectedUnitState!.moved) {
+            && this.selectedUnitState?.moved === false) {
             this.eventManager.dispatch(Events.ASK_MOVE, data);
         } else if (this.mode === Mode.ACT
             && this.isSelectedUnit(this.currentUnitState)
-            && !this.selectedUnitState!.acted) {
+            && this.selectedUnitState?.acted === false) {
             data.actionTypeId = "attack";
             this.eventManager.dispatch(Events.ASK_ACT, data);
         }
         this.resetSelection();
     }
 
-    onMove() {
+    onMove(): void {
         this.mode = Mode.MOVE;
         this.uiPort.close();
         const data: any = {
@@ -127,7 +127,7 @@ export default class GameManager {
         this.eventManager.dispatch(Events.ASK_POSITIONS, data);
     }
 
-    onAttack() {
+    onAttack(): void {
         this.mode = Mode.ACT;
         this.uiPort.close();
         const data: any = {
@@ -138,13 +138,13 @@ export default class GameManager {
         this.eventManager.dispatch(Events.ASK_ACTION_INFO, data);
     }
 
-    onNextTurn() {
+    onNextTurn(): void {
         this.eventManager.dispatch(Events.ASK_END_TURN, this.battleId);
         this.uiPort.close();
         this.resetSelection();
     }
 
-    onResetAction() {
+    onResetAction(): void {
         this.eventManager.dispatch(Events.ASK_ROLLBACK_ACTION, this.battleId);
         this.uiPort.close();
         this.resetSelection();
@@ -156,7 +156,7 @@ export default class GameManager {
     }
 
     private isSelectedUnit(unitState: UnitState): boolean {
-        return this.selectedUnitState!.unit.id === unitState.unit.id;
+        return this.selectedUnitState?.unit.id === unitState.unit.id;
     }
 }
 

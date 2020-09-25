@@ -2,20 +2,20 @@ import { Position } from "../../game/types";
 import { UnitContainer } from "../sprites/unit-container";
 import { Direction } from "../../game/enums";
 
-abstract class Animation<T> {
+abstract class Animation<T, S> {
     protected readonly object: T;
-    private callbackOnComplete?: Function;
-    private callbackOnUpdate?: Function;
+    private callbackOnComplete?: (o: T) => void;
+    private callbackOnUpdate?: (s: S) => void;
 
     constructor(object: T) {
         this.object = object;
     }
 
-    onUpdate(callback: Function) {
+    onUpdate(callback: (s: S) => void) {
         this.callbackOnUpdate = callback;
     }
 
-    onComplete(callback: Function) {
+    onComplete(callback: (o: T) => void) {
         this.callbackOnComplete = callback;
     }
 
@@ -37,10 +37,10 @@ abstract class Animation<T> {
         }
     }
 
-    abstract animate(): any;
+    abstract animate(): S;
 }
 
-export default class MoveAnimation extends Animation<UnitContainer> {
+export default class MoveAnimation extends Animation<UnitContainer, Position> {
     private readonly path: Position[];
     private p: { x: number, y: number, z: number };
     private next = 0;
@@ -58,6 +58,7 @@ export default class MoveAnimation extends Animation<UnitContainer> {
         this.p = this.path[this.next];
         this.next++;
         if (this.next >= this.path.length) {
+            this.object.idle();
             this.stop();
         } else {
             this.sign.x = Math.sign(this.path[this.next].x - this.p.x);
@@ -76,13 +77,22 @@ export default class MoveAnimation extends Animation<UnitContainer> {
         }
     }
 
-    animate() {
-        this.p.x += this.sign.x * this.delta;
-        this.p.y += this.sign.y * this.delta;
-        this.p.z += this.sign.z * this.delta;
-        if (Math.abs(this.path[this.next].x - this.p.x) <= this.delta
-            && Math.abs(this.path[this.next].y - this.p.y) <= this.delta
-            && Math.abs(this.path[this.next].z - this.p.z) <= this.delta) {
+    animate(): Position {
+        const moveAlong = {
+            x: Math.abs(this.path[this.next].x - this.p.x) > this.delta,
+            y: Math.abs(this.path[this.next].y - this.p.y) > this.delta,
+            z: Math.abs(this.path[this.next].z - this.p.z) > this.delta
+        };
+        if (moveAlong.x) {
+            this.p.x += this.sign.x * this.delta;
+        }
+        if (moveAlong.y) {
+            this.p.y += this.sign.y * this.delta;
+        }
+         if (moveAlong.z) {
+            this.p.z += this.sign.z * this.delta;
+         }
+        if (!(moveAlong.x || moveAlong.y || moveAlong.z)) {
             this.updateTarget();
         }
         return this.p;

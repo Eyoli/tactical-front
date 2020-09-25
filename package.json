@@ -6,7 +6,8 @@
   "scripts": {
     "build": "webpack --mode development --config webpack.server.config.js && webpack --mode development",
     "start": "set NODE_ENV=dev&& node ./dist/server.js",
-    "test": "set NODE_ENV=test&& ts-mocha src/**/*.spec.ts"
+    "test": "set NODE_ENV=test&& ts-mocha src/**/*.spec.ts",
+    "lint": "./node_modules/.bin/eslint **/*.ts"
   },
   "keywords": [],
   "author": "",
@@ -31,10 +32,13 @@
     "@types/socket.io-client": "^1.4.33",
     "@types/webpack-dev-middleware": "^3.7.2",
     "@types/webpack-hot-middleware": "^2.25.3",
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/parser": "^4.1.1",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.1.0",
     "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^4.2.1",
+    "eslint": "^7.9.0",
     "file-loader": "^6.0.0",
     "html-loader": "^1.2.1",
     "html-webpack-plugin": "^4.3.0",
